@@ -44,8 +44,8 @@ function Register() {
   return (
 
     <div style={{ backgroundColor: "whitesmoke", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} >
-      <h3>Register</h3>
-      <Form style={{ width: "500px" }}>
+      <Form style={{ width: "500px" ,backgroundColor:"white", padding:"30px", borderRadius:"10px" }}>
+      <h3 style={{marginBottom:"20px"}}>Register</h3>
         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
           <Form.Control onChange={setValue} name="name" value={inputValues.name} type="text" placeholder="Enter your user name" />
         </Form.Group>
@@ -67,7 +67,7 @@ function Register() {
           <Button onClick={submitForm}>Submit</Button>
         </div>
 
-        <div>
+        <div style={{marginTop:"20px"}}>
           <h6>Already have account ? </h6>
           <Link to={"/login"}>
             Login</Link>
