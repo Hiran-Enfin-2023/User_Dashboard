@@ -6,11 +6,14 @@ import Button from 'react-bootstrap/Button';
 import { useNavigate } from "react-router-dom";
 import Header from '../Header/Header';
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 function Login() {
 
   const baseURL = process.env.REACT_APP_AUTH_BASEURL
   const navigate = useNavigate()
   const [showPass, setShowPass] = useState(false)
+  const [err, setErr] = useState("")
   const [inputValues, setInputValues] = useState({
     email: "",
     password: "",
@@ -38,17 +41,23 @@ function Login() {
 
       try {
         const res = await axios.post("http://localhost:4000/api/auth/login", { email, password })
-
         if (res.status === 200) {
           console.log("User login successfully ", res.data.access_token);
           localStorage.setItem("access_token", res.data.access_token)
+
           navigate("/dashboard");
-        } else {
-          console.log(res.response);
+          return (
+            <div>
+              <Stack sx={{ width: '100%' }} spacing={2}>
+                <Alert severity="success">This is a success alert — check it out!</Alert>
+              </Stack>
+            </div>
+          )
         }
       } catch (error) {
-        alert(error.response)
-        // console.log(error.response.data.message);
+
+        // alert(error.response.data.message)
+        console.log(error);
       }
 
     }
@@ -67,7 +76,7 @@ function Login() {
 
           <Form.Group className="mb-3 d-flex " >
             <Form.Control onChange={setValue} name="password" value={inputValues.password} type={!showPass ? "password" : "text"} placeholder="Enter your password" />
-            <Button style={{backgroundColor:"black", border:"none"}} onClick={() => setShowPass(!showPass)}>{!showPass ? <FaEyeSlash /> : <FaEye />} </Button>
+            <Button style={{ backgroundColor: "black", border: "none" }} onClick={() => setShowPass(!showPass)}>{!showPass ? <FaEyeSlash /> : <FaEye />} </Button>
           </Form.Group>
 
 
