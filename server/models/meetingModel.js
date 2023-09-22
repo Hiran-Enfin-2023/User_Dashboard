@@ -3,7 +3,7 @@ const { ObjectId } = mongoose.Schema;
 
 const meetingSchema = new mongoose.Schema(
   {
-    meetingName: {
+    meetingTitle: {
       type: String,
       required: true,
     },
@@ -14,15 +14,19 @@ const meetingSchema = new mongoose.Schema(
         required: true,
       },
     ],
-    meetingTime: {
+    meetingDate: {
       type: Date,
       default: Date.now,
       required: true,
     },
+    time:{
+      type:Number,
+      default:(new Date()).getTime()  
+    },
     meetingStatus: {
-      type: String,
-      enum: ["Active", "Deactive"],
-      default: "Active",
+      type: Boolean,
+      // enum: ["Active","inActive"],
+      default: true,
       required: true,
     },
     slug: {

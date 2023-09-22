@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { Link } from "react-router-dom";
-import axios from "axios"
 import Button from 'react-bootstrap/Button';
 import Header from '../Header/Header';
 import { FaEye, FaEyeSlash } from "react-icons/fa"
@@ -10,6 +9,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import { useForm } from "react-hook-form"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
+import axios from '../../axios';
 
 function Register() {
   const schema = yup.object({
@@ -20,7 +20,7 @@ function Register() {
     confirmPassword: yup.string().required("Confirm your password")
   })
 
-  console.log(schema);
+  
   const [showPass, setShowPass] = useState(false)
   const [inputValues, setInputValues] = useState({
     name: "",
@@ -31,7 +31,7 @@ function Register() {
   })
 
   const { register, handleSubmit, formState: { errors } } = useForm({ resolver: yupResolver(schema) })
-  const onSubmit = (data) => { console.log(data); }
+  // const onSubmit = (data) => { console.log(data); }
   const setValue = (e) => {
     const { name, value } = e.target;
     setInputValues(() => {
@@ -43,33 +43,32 @@ function Register() {
   }
 
   // console.log(inputValues);
-  // const submitForm = async (e) => {
-  //   e.preventDefault();
+  const  onSubmit = async () => {
 
-  //   const { name, email, phoneNumber, password, confirmPassword } = inputValues;
+    const { name, email, phoneNumber, password, confirmPassword } = inputValues;
 
-  //   if (name === " ") {
-  //     alert("Fill the require fields")
-  //   } else {
-  //     const res = await axios.post("http://localhost:4000/api/auth/register", { name, email, phoneNumber, password, confirmPassword })
+    if (name === " ") {
+      alert("Fill the require fields")
+    } else {
+      const res = await axios.post("/auth/register", { name, email, phoneNumber, password, confirmPassword })
 
-  //     if (res.status === 200) {
-  //       console.log("Created", res);
-  //       return (
-  //         <div>
-  //           <Alert severity="success">
-  //             <AlertTitle>Success</AlertTitle>
-  //             <strong>Your registered successfully</strong>
-  //           </Alert>
-  //         </div>
-  //       )
-  //     } else {
-  //       console.log("something went wrong");
-  //     }
-  //   }
-  // }
+      if (res.status === 200) {
+        console.log("Created", res);
+        return (
+          <div>
+            <Alert severity="success">
+              <AlertTitle>Success</AlertTitle>
+              <strong>Your registered successfully</strong>
+            </Alert>
+          </div>
+        )
+      } else {
+        console.log("something went wrong");
+      }
+    }
+  }
   return (
-    <div style={{ height: "100%" }}>
+    <div style={{ height: "100vh" }}>
       <Header />
       <div style={{ height: "100%", backgroundColor: "#DCDCDC", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} >
         <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "500px", backgroundColor: "white", padding: "30px", borderRadius: "10px" }}>

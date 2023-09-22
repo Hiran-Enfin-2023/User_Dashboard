@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 exports.authenticateUser = (req,res,next)=>{
 const token = req.headers.authorization;
-console.log(token);
+// console.log(token);
 if(!token){
     res.status(401).json({
         message:"your are not authenticated"

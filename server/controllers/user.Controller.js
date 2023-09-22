@@ -1,40 +1,33 @@
 const userModel = require("../models/userModel");
 const bcyrpt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-exports.register = async (req, res) => {
-  console.log(req.body);
+const { throwError } = require("../middleware/error");
+const asyncHandler = require("express-async-handler");
+const apiFeatures = require("../utils/apiFeatures");
+const sendMail = require("../utils/Mail");
+
+exports.register = asyncHandler(async (req, res, next) => {
   const { name, email, phoneNumber, password, confirmPassword } = req.body;
 
   if (!name || !email || !phoneNumber || !password || !confirmPassword) {
-    res.status(422).json({
-      message: "Please fill all fields",
-    });
+    return next(throwError(422, "please fill all fields"));
   } else {
     try {
       const existUser = await userModel.findOne({ email: email });
 
       if (existUser) {
-        res.status(422).json({
-          message: "email already in use",
-        });
+        return next(throwError(422, "email already in use"));
       } else if (password !== confirmPassword) {
-        res.status(422).json({
-          message: "please re-enter correct password",
-        });
+        return next(throwError(422, "please re-enter correct password"));
       } else {
         const salt = bcyrpt.genSaltSync(12);
         const passwordHashed = bcyrpt.hashSync(req.body.password, salt);
-        const confirmPasswordHashed = bcyrpt.hashSync(
-          req.body.confirmPassword,
-          salt
-        );
 
         const newUser = await userModel({
           name,
           email,
           phoneNumber,
           password: passwordHashed,
-          confirmPassword: confirmPasswordHashed,
         });
 
         const user = await newUser.save();
@@ -45,26 +38,21 @@ exports.register = async (req, res) => {
         });
       }
     } catch (error) {
-      res.status(422).json({
-        message: error,
-      });
-      console.log(error);
+      next(error);
     }
   }
-};
+});
 
-exports.login = async (req, res) => {
+exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    res.status(422).json({
-      message: "Please fill all fields",
-    });
+    return next(throwError(422, "please fill all fileds"));
   }
   try {
     const user = await userModel.findOne({ email: email });
     if (!user) {
-      res.status(422).json({ message: "not such email to login" });
+      return next(throwError(422, "not such mail to login"));
     }
     const isPasswordValid = await bcyrpt.compare(
       req.body.password,
@@ -74,32 +62,28 @@ exports.login = async (req, res) => {
     if (isPasswordValid) {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY);
 
-      const { password, confirmPassword, ...rest } = user._doc;
+      const { password, confirmPassword, isAdmin, ...rest } = user._doc;
       res.status(200).json({
         message: "Logged in successfully",
-        user: rest,
+        rest,
+        isAdmin,
         access_token: token,
       });
     } else {
-      res.status(403).json({
-        message: "Wrong password",
-      });
+      return next(throwError(422, "Wrong password"));
     }
   } catch (error) {
-    res.status(422).json({
-      message: error,
-    });
-    console.log(error);
+    next(error);
   }
-};
+});
 
-exports.validateUser = async (req, res) => {
+exports.validateUser = asyncHandler(async (req, res) => {
   try {
     // console.log("controller", req.userId);
     const validUser = await userModel.findOne({ _id: req.userId });
 
     if (validUser) {
-      const {password,confirmPassword, ...rest} = validUser._doc
+      const { password, confirmPassword, ...rest } = validUser._doc;
       res.status(200).json({
         message: "You are authenticated",
         ...rest,
@@ -110,4 +94,43 @@ exports.validateUser = async (req, res) => {
       message: error,
     });
   }
-};
+});
+
+exports.allUser = asyncHandler(async (req, res, next) => {
+  try {
+    // const users = await userModel.find();
+    const apiFeature = new apiFeatures(userModel.find(), req.query).search();
+    const users = await apiFeature.query;
+    res.status(201).json({
+      message: "success",
+      users,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(throwError(404, "user not found"));
+  }
+
+  const resetPasswordToken = "K#JhLJJ#LJ#KKL#LK#J@JLKKlkjjlhrj";
+
+  try {
+    sendMail({
+      email:user.email,
+      subject:"Hello Email test",
+      message:"First email test check it"
+    })
+
+    res.status(200).json({
+      success:true,
+      message: `Email sent to ${user.email}`
+    })
+  } catch (err) {
+    next(err)
+  }
+});

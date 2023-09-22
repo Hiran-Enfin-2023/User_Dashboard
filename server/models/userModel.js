@@ -20,9 +20,9 @@ const userSchema = mongoose.Schema({
     type:String,
     required:[true,"Please enter password"]
   },
-  confirmPassword:{
-    type:String,
-    required:[true,"Please enter password"]
+  isAdmin:{
+    type:Boolean,
+    default:false
   }
 },
 {

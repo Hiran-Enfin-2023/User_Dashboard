@@ -1,7 +1,6 @@
 import {useState } from 'react';
 import { useForm } from "react-hook-form"
 import Form from 'react-bootstrap/Form';
-import { Link } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from "react-router-dom";
 import Header from '../Header/Header';
@@ -22,7 +21,6 @@ function Login() {
 
 
   const navigate = useNavigate()
-  const [user,setUser] = useState({})
   const [showPass, setShowPass] = useState(false)
   const [inputValues, setInputValues] = useState({
     email: "",
@@ -48,11 +46,15 @@ function Login() {
     try {
       const res = await axios.post("/auth/login",{email,password});
       console.log(res.data);
-      if(res.status===200 && res.data.isAdmin===false){
-        // console.log("user", res.data);
-        localStorage.setItem("user_token",res.data.access_token)
-        navigate("/")
+      if(res.status===200 && res.data.isAdmin){
+
+        // console.log("admin",res.data);
+        localStorage.setItem("admin_token", res.data.access_token);
+      
+          navigate("/admin");
+        //   setUser(res.data)
       }
+      
       // localStorage.setItem("token", res.data.access_token)
     } catch (error) {
       console.log(error);
@@ -61,12 +63,12 @@ function Login() {
 
   
   return (
-    <div style={{ height: "100vh" ,backgroundColor:"red"}}>
+    <div style={{ height: "100vh" }}>
       <Header />
       <div style={{ padding: "20px", backgroundColor: "#DCDCDC ", width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}  >
 
         <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "500px", backgroundColor: "white", padding: "30px", borderRadius: "10px" }}>
-          <h3>User Login {process.env.REACT_APP_HI_MESSAGE}</h3>
+          <h3>Admin Login {process.env.REACT_APP_HI_MESSAGE}</h3>
           <Form.Group className="mb-3" >
             <Form.Control {...register("email", { required: "Please enter email" })} onChange={setValue} name="email" value={inputValues.email} type="text" aria-invalid={errors.email ? "true" : "false"} placeholder="Enter your email" />
             {errors.email && (
@@ -91,11 +93,7 @@ function Login() {
             <Button style={{ width: "100%" }} type='submit'>Submit</Button>
           </div>
 
-          <div style={{ marginTop: "10px" }}>
-            <h6>Don't have account. New ? </h6>
-            <Link to={"/register"}>
-              Register</Link>
-          </div>
+          
 
         </Form>
 

@@ -1,16 +1,18 @@
-import React from 'react'
 import Header from '../../components/Header/Header'
 import Sidebar from '../../components/sidebar/Sidebar'
-import AdminDashboard from '../../components/admin/adminDashboard/AdminDashboard'
+import AdminTable from '../../components/admin/adminDashboard/AdminTable'
+
 
 function AdminPage() {
   return (
-    <div className='bg-light'>
-        <Header/>
-        <div className='d-flex'>
-            <Sidebar/>
-            <AdminDashboard/> 
+    <div style={{ height: "100%" }} className='bg-light'>
+      <div style={{ height: "100%", width: "100%" }} className='d-flex'>
+        <Sidebar/>
+        <div className="adminPage w-100">
+          <Header />
+          <AdminTable/>
         </div>
+      </div>
     </div>
   )
 }

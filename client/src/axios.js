@@ -1,18 +1,40 @@
 import axios from "axios";
+const axiosInstance = axios.create({
+  // baseURL: "http://localhost:4000/api/",
+  baseURL: process.env.REACT_APP_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-const instance = axios.create({
-    baseURL: process.env.REACT_APP_BASEURL,
-    headers:{
-        "Content-Type":"application/json",
-        timeout:1000,
+axiosInstance.interceptors.request.use(async (config) => {
+  // console.log("instance", config);
+  const token = localStorage.getItem("access_token");
+  const auth = token ? `${token}` : "";
+
+  config.headers.Authorization = auth;
+
+  return config;
+});
+
+axiosInstance.interceptors.response.use(
+  (response) => {
+    if (response && response.data) {
+      //   console.log("response instance", response);
+      return response;
     }
-})
 
-instance.interceptors.request.use(function(cb){
-    const userToken = localStorage.getItem("access_token")
-    cb.headers.Authorization = userToken && `Bearer ${userToken}`;
+    return response;
+  },
+  (error) => {
+    if (error) {
+      console.log(error);
+      // window.location.assign('/login');
+    
+    }
 
-    return cb;
-})
+    return Promise.reject(error);
+  }
+);
 
-export default instance
+export default axiosInstance;
