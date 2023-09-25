@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import Form from 'react-bootstrap/Form';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Link } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Header from '../Header/Header';
@@ -20,7 +22,17 @@ function Register() {
     confirmPassword: yup.string().required("Confirm your password")
   })
 
-  
+  toast.success('🦄 Wow so easy!', {
+    position: "top-center",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+  });
+
   const [showPass, setShowPass] = useState(false)
   const [inputValues, setInputValues] = useState({
     name: "",
@@ -43,8 +55,8 @@ function Register() {
   }
 
   // console.log(inputValues);
-  const  onSubmit = async () => {
-
+  const onSubmit = async () => {
+    
     const { name, email, phoneNumber, password, confirmPassword } = inputValues;
 
     if (name === " ") {
@@ -52,16 +64,9 @@ function Register() {
     } else {
       const res = await axios.post("/auth/register", { name, email, phoneNumber, password, confirmPassword })
 
-      if (res.status === 200) {
-        console.log("Created", res);
-        return (
-          <div>
-            <Alert severity="success">
-              <AlertTitle>Success</AlertTitle>
-              <strong>Your registered successfully</strong>
-            </Alert>
-          </div>
-        )
+      if (res.status === 200 || res.data.success) {
+
+        alert("User join successfully")
       } else {
         console.log("something went wrong");
       }
@@ -69,7 +74,7 @@ function Register() {
   }
   return (
     <div style={{ height: "100vh" }}>
-      <Header />
+      {/* <Header /> */}
       <div style={{ height: "100%", backgroundColor: "#DCDCDC", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} >
         <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "500px", backgroundColor: "white", padding: "30px", borderRadius: "10px" }}>
           <h3 style={{ marginBottom: "20px" }}>Register</h3>

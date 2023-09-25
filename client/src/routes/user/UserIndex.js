@@ -6,6 +6,8 @@ import LoggedUser from "./LoggedUser";
 import NotLoggedUser from "./NotLoggedUser";
 import Login from "../../components/login/Login";
 import Register from "../../components/register/Register";
+import ForgotPassword from "../../components/resetPassword/ForgotPassword";
+import ResetPassword from "../../components/resetPassword/ResetPassword";
 
 function UserIndex() {
   return (
@@ -18,6 +20,8 @@ function UserIndex() {
         <Route element={<NotLoggedUser />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot/password" element={<ForgotPassword />} />
+          <Route path="/password/reset/:token" element={<ResetPassword />} />
         </Route>
       </Routes>
     </div>

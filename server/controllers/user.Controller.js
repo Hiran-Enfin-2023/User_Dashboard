@@ -5,6 +5,12 @@ const { throwError } = require("../middleware/error");
 const asyncHandler = require("express-async-handler");
 const apiFeatures = require("../utils/apiFeatures");
 const sendMail = require("../utils/Mail");
+const SibApiV3Sdk = require("sib-api-v3-sdk");
+const htmlContent = require("../utils/template");
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
+
+const apiKey = defaultClient.authentications["api-key"];
+apiKey.apiKey = process.env.EMAIL_API_KEY;
 
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, email, phoneNumber, password, confirmPassword } = req.body;
@@ -33,7 +39,7 @@ exports.register = asyncHandler(async (req, res, next) => {
         const user = await newUser.save();
         const { password, confirmPassword, ...rest } = user._doc;
         res.status(200).json({
-          message: "user created",
+          success: true,
           rest,
         });
       }
@@ -64,7 +70,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 
       const { password, confirmPassword, isAdmin, ...rest } = user._doc;
       res.status(200).json({
-        message: "Logged in successfully",
+        success: true,
         rest,
         isAdmin,
         access_token: token,
@@ -102,7 +108,7 @@ exports.allUser = asyncHandler(async (req, res, next) => {
     const apiFeature = new apiFeatures(userModel.find(), req.query).search();
     const users = await apiFeature.query;
     res.status(201).json({
-      message: "success",
+      success: true,
       users,
     });
   } catch (error) {
@@ -111,26 +117,84 @@ exports.allUser = asyncHandler(async (req, res, next) => {
 });
 
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
-  const user = await userModel.findOne({ email: req.body.email });
 
+  console.log(req.body.email);
+  const user = await userModel.findOne({ email: req.body.email }).select("-password");
+  const id = user.id;
   if (!user) {
-    return next(throwError(404, "user not found"));
+    return next(throwError(404, "user not found"));GET
   }
+  const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+  const sender = {
+    email: "hirankvlr@gmail.com",
+    name: "Hiran Raj",
+  };
 
-  const resetPasswordToken = "K#JhLJJ#LJ#KKL#LK#J@JLKKlkjjlhrj";
+  const receiver = [
+    {
+      email: req.body.email,
+    },
+  ];
+
+  const token = jwt.sign({ id: id }, process.env.JWT_SECRET_KEY,{
+    expiresIn: "30m"
+  });
+  // http://localhost:3000/password/reset/15161dsf
+  const resetUrl = `http://localhost:3000/password/reset/${token}`;
+  const message = `Your password reset url is as follows \n\n ${resetUrl} \n\n if you haven't requested for the password recovery, then ignore it`;
 
   try {
-    sendMail({
-      email:user.email,
-      subject:"Hello Email test",
-      message:"First email test check it"
-    })
+    const sendMail = await apiInstance.sendTransacEmail({
+      sender,
+      to: receiver,
+      subject: "Reset password email",
+      textContent: "Reset password email",
+      htmlContent: htmlContent(message),
+    });
 
     res.status(200).json({
-      success:true,
-      message: `Email sent to ${user.email}`
-    })
+      success: true,
+      message: "Mail send successfully",
+      sendMail,
+      user:{
+        user,
+        token
+      }
+    });
   } catch (err) {
-    next(err)
+    next(err);
+  }
+});
+
+
+
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  try {
+    const token  = req.params.token;
+    const { password } = req.body;
+
+
+    const tokenVerify = jwt.verify(token,process.env.JWT_SECRET_KEY)
+
+    if(!tokenVerify){
+      return next(throwError(404,"Invalid token"))
+    }
+   
+ const id = tokenVerify.id
+    const hashPassword = bcyrpt.hashSync(password, 12);
+
+    const data = await userModel.findByIdAndUpdate(id, {
+      password: hashPassword,
+    }).select("-password");
+
+    res.status(200).json({
+      success: true,
+      message: "New password updated",
+      user: data,
+    });
+
+    // res.send(tokenVerify)
+  } catch (error) {
+    next(error)
   }
 });

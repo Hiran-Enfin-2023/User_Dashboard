@@ -51,7 +51,7 @@ function Login() {
         // console.log("admin",res.data);
         localStorage.setItem("admin_token", res.data.access_token);
       
-          navigate("/admin");
+          navigate("/admin/meetings");
         //   setUser(res.data)
       }
       
@@ -64,7 +64,7 @@ function Login() {
   
   return (
     <div style={{ height: "100vh" }}>
-      <Header />
+      {/* <Header /> */}
       <div style={{ padding: "20px", backgroundColor: "#DCDCDC ", width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}  >
 
         <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "500px", backgroundColor: "white", padding: "30px", borderRadius: "10px" }}>

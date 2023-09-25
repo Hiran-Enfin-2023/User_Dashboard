@@ -1,26 +1,32 @@
-const nodemailer = require("nodemailer");
+const Mailer = require("nodemailer");
 
-const sendMail = async(options)=>{
-    const transport  = {
-        host:process.env.SMTP_HOST,
-        port:process.env.SMTP_PORT,
-        auth:{
-            user:process.env.SMTP_USER,
-            pass:process.env.SMTP_PASS
-        }
-    };
+// Initialize the Authentication of Gmail Options
 
-    const transportor = nodemailer.createTransport(transport)
-
-    const message = {
-        from : `${process.env.SMTP_FROM_NAME} <${process.env.SMTP_FROM_EMAIL}>`,
-        to:options.email,
-        subject:options.subject,
-        text:options.message
-    }
-
-    await transportor.sendMail(message)
-
+const sendMail =(options)=>{
+    const transportar = Mailer.createTransport({
+        service: "gmail",
+        host:'sandbox.smtp.mailtrap.io',
+        port:2525,
+        auth: {
+          user: "hirankvlr@gmail.com", // Your Gmail ID
+          pass: "Sindhuamma",         // Your Gmail Password
+        },
+      });
+      
+      // Deifne mailing options like Sender Email and Receiver.
+      const mailOptions = {
+        from: "hirankvlr@gmail.com", // Sender ID
+        to: "hiranrajofficial@gmail.com", // Reciever ID
+        subject:options.subject, // Mail Subject
+        text: options.message, // Description
+      };
+      
+      // Send an Email
+      transportar.sendMail(mailOptions, (error, info) => {
+        if (error) console.log(error);
+        console.log(info);
+      });
 }
+
 
 module.exports = sendMail

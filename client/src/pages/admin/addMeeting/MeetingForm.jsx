@@ -16,6 +16,7 @@ function MeetingForm() {
 
 
   const [meetingTitle, setMeetingTitle] = useState('')
+  const [slug, setSlug] = useState("")
   const [meetingDate, setMeetingDateDate] = useState(new Date())
   const [host, setHost] = useState([]);
   const [participants, setParticipants] = useState([])
@@ -25,6 +26,9 @@ function MeetingForm() {
     setMeetingTitle(e.target.value)
   }
 
+  const onSlugChange = (e) => {
+    setSlug(e.target.value)
+  }
   const onDateChange = (e) => {
     setMeetingDateDate(e)
   }
@@ -36,7 +40,7 @@ function MeetingForm() {
     setParticipants(e)
   }
 
- 
+
 
   const joinData = {
     host: host?.map((e) => {
@@ -46,7 +50,8 @@ function MeetingForm() {
       return e.value
     }),
     meetingTitle,
-    meetingDate
+    meetingDate,
+    slug
   }
 
   console.log(joinData);
@@ -122,6 +127,14 @@ function MeetingForm() {
                 name='participants'
                 value={participants}
               />
+
+              <Form.Group className="mb-3" >
+                <Form.Label>Generate a Slug</Form.Label>
+                <Form.Control name="slug" type="text" onChange={onSlugChange} value={slug} placeholder="Generate a slug" />
+                {/* {errors.email && (
+              <p style={{ color: "red" }} role="alert">*{errors.email?.message}</p>
+            )} */}
+              </Form.Group>
 
               <Form.Label>Select Date</Form.Label>
               <div className="setDate">

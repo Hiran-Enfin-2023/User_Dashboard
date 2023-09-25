@@ -5,5 +5,5 @@ export default function AdminLoggedIn() {
   
   const adminToken = localStorage.getItem("admin_token")
 
-  return adminToken ? <Outlet /> : <Navigate to="/login" />;
+  return adminToken ? <Outlet /> : <Navigate to="/admin/login" />;
 }

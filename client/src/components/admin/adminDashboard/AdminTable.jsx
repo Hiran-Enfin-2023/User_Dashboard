@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { HiPlus } from "react-icons/hi"
+import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi"
 import axiosInstance from '../../../axios';
 import { FaTrash, FaEdit, FaUndoAlt } from 'react-icons/fa'
 function AdminTable() {
     const navigate = useNavigate();
     const [meetings, setMeetings] = useState();
+    const [page, setPage] = useState(1)
     const fetchMeetings = async () => {
-        const res = await axiosInstance.get("/meeting/all/meetings");
+        const res = await axiosInstance.get(`/meeting/all/meetings/?page=${page}`);
         setMeetings(res.data.meeting)
-
     }
+    console.log(meetings);
     const deActivateMeeting = async (id) => {
         const res = await axiosInstance.patch(`/meeting/deactivate/${id}`)
         // console.log(res);
@@ -22,15 +24,35 @@ function AdminTable() {
 
     useEffect(() => {
         fetchMeetings();
-    }, [])
+    }, [page])
 
+    const selectPageHanlder = (page) => {
+        if (page > 0) {
 
+            setPage(page)
+        }
+    }
 
     return (
         <div>
             <div className="admin-main d-flex justify-content-between mt-3 p-3">
                 <div className="header-main">
                     <h2>Meetings</h2>
+                </div>
+                <div className="header-search">
+                <form
+                    className="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                    <div className="input-group">
+                        <input style={{width:"400px",height:"50px"}} type="text" className="form-control bg-white  border-1 small" placeholder="Search for..."
+                            aria-label="Search" aria-describedby="basic-addon2" />
+                        <div className="input-group-append">
+                            <button style={{height:"50px",width:"50px"}} className="btn btn-primary " type="button">
+                                <i className="fas fa-search fa-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
                 </div>
                 <div className="meeting-btn">
                     <Link to='/admin/create' className='btn btn-primary p-2'>
@@ -43,7 +65,7 @@ function AdminTable() {
                 <div className="card shadow mb-2">
                     {
                         meetings?.length ? (<div className="card-main">
-                            <table className='table '>
+                            <table style={{ minHeight: "350px" }} className='table '>
                                 <thead>
                                     <tr>
                                         <th>
@@ -123,6 +145,19 @@ function AdminTable() {
 
                 </div>
             </div>
+
+            {
+
+                meetings?.length > 0 && <div style={{  padding: "10px", justifyContent: "center" }} className="pagination mt-2">
+                    <div>
+
+                        <span ><BiSolidLeftArrow style={{ height: "20px", width: "20px" }} onClick={() => selectPageHanlder(page - 1)} /> </span>
+                        <span style={{ fontSize: "18px" }}>{page}</span>
+                        <span onClick={() => selectPageHanlder(page + 1)}><BiSolidRightArrow style={{ height: "20px", width: "20px" }} /></span>
+                    </div>
+                </div>
+            }
+
         </div>
     )
 }
