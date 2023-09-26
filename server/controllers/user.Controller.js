@@ -8,9 +8,10 @@ const sendMail = require("../utils/Mail");
 const SibApiV3Sdk = require("sib-api-v3-sdk");
 const htmlContent = require("../utils/template");
 const defaultClient = SibApiV3Sdk.ApiClient.instance;
-
+const axios = require("axios")
 const apiKey = defaultClient.authentications["api-key"];
 apiKey.apiKey = process.env.EMAIL_API_KEY;
+
 
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, email, phoneNumber, password, confirmPassword } = req.body;
@@ -117,75 +118,77 @@ exports.allUser = asyncHandler(async (req, res, next) => {
 });
 
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
-
-  console.log(req.body.email);
-  const user = await userModel.findOne({ email: req.body.email }).select("-password");
-  const id = user.id;
-  if (!user) {
-    return next(throwError(404, "user not found"));GET
-  }
-  const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-  const sender = {
-    email: "hirankvlr@gmail.com",
-    name: "Hiran Raj",
-  };
-
-  const receiver = [
-    {
-      email: req.body.email,
-    },
-  ];
-
-  const token = jwt.sign({ id: id }, process.env.JWT_SECRET_KEY,{
-    expiresIn: "30m"
-  });
-  // http://localhost:3000/password/reset/15161dsf
-  const resetUrl = `http://localhost:3000/password/reset/${token}`;
-  const message = `Your password reset url is as follows \n\n ${resetUrl} \n\n if you haven't requested for the password recovery, then ignore it`;
-
   try {
-    const sendMail = await apiInstance.sendTransacEmail({
+    console.log(req.body.email);
+    const user = await userModel
+      .findOne({ email: req.body.email })
+      .select("-password");
+
+    // res.send(id)
+    if (!user) {
+      return next(throwError(404, "user not found"));
+    }
+    const id = user._id;
+
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    const sender = {
+      email: "hirankvlr@gmail.com",
+      name: "Hiran Raj",
+    };
+
+    const receiver = [
+      {
+        email: req.body.email,
+      },
+    ];
+
+    const token = jwt.sign({ _id: id }, process.env.JWT_SECRET_KEY);
+
+    const resetUrl = `http://localhost:3000/password/reset/${token}`;
+    const message = `Your password reset url is as follows \n\n ${resetUrl} \n\n if you haven't requested for the password recovery, then ignore it`;
+
+   const sendMail = await apiInstance.sendTransacEmail( {
       sender,
       to: receiver,
-      subject: "Reset password email",
-      textContent: "Reset password email",
+      subject: "Password recovery mail",
       htmlContent: htmlContent(message),
-    });
+    })
 
     res.status(200).json({
-      success: true,
-      message: "Mail send successfully",
+      success:true,
       sendMail,
+
       user:{
         user,
         token
       }
-    });
+    })
+
+    
   } catch (err) {
     next(err);
   }
 });
 
-
-
 exports.resetPassword = asyncHandler(async (req, res, next) => {
   try {
-    const token  = req.params.token;
+    const token = req.params.token;
     const { password } = req.body;
 
+    const tokenVerify = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-    const tokenVerify = jwt.verify(token,process.env.JWT_SECRET_KEY)
-
-    if(!tokenVerify){
-      return next(throwError(404,"Invalid token"))
+    if (!tokenVerify) {
+      return next(throwError(404, "Invalid token"));
     }
-   
- const id = tokenVerify.id
+
+    const id = tokenVerify.id;
     const hashPassword = bcyrpt.hashSync(password, 12);
 
-    const data = await userModel.findByIdAndUpdate(id, {
-      password: hashPassword,
-    }).select("-password");
+    const data = await userModel
+      .findByIdAndUpdate(id, {
+        password: hashPassword,
+      })
+      .select("-password");
 
     res.status(200).json({
       success: true,
@@ -195,6 +198,6 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 
     // res.send(tokenVerify)
   } catch (error) {
-    next(error)
+    next(error);
   }
 });

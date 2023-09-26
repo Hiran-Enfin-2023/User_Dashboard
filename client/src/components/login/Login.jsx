@@ -55,7 +55,8 @@ function Login() {
       }
       // localStorage.setItem("token", res.data.access_token)
     } catch (error) {
-      console.log(error);
+      alert(error.response.data.message)
+      console.log(error.response.data.message);
     }
   };
 
@@ -96,7 +97,7 @@ function Login() {
             <div className="d-flex justify-content-between">
               <Link to={"/register"}>
                 Register</Link>
-              <Link to="">
+              <Link to="/forgot/password">
                 Forgot password
               </Link>
             </div>

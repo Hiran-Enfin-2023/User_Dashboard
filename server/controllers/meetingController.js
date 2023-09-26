@@ -41,35 +41,36 @@ exports.createMeeting = asyncHandler(async (req, res, next) => {
 
 exports.meetings = asyncHandler(async (req, res) => {
   try {
-    // const id = "65081a794e878083a64df98e";
-    // const meetings = await meetingModel
-    //   .find()
-    //   .populate({
-    //     path: "host",
-    //     select: ["name", "email"],
-    //   })
-    //   .populate({
-    //     path: "participants",
-    //     select: ["name", "email"],
-    //   });
-    // res.status(200).json({
-    //   meetings,
-    // });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 3;
 
-    const meetingsPerPage = 4;
-    const apiFeature = new apiFeatures(meetingModel.find(), req.query)
-      .search()
-      .paginate(meetingsPerPage);
-    const meeting = await apiFeature.query
-      .populate({ path: "host", select: ["name", "email"] })
-      .populate({ path: "participants", select: ["name", "email"] });
+    
+    
+    
+    const meetingName = req.query.meetingTitle;
+    
+    const querySearch = meetingName ? {
+      $or: [{ meetingTitle: { $regex: new RegExp(meetingName, "i") } }]
+    } : {}
+    
+    
+    const totalDocuments = await meetingModel.countDocuments(querySearch);
+    const totalPages = Math.ceil(totalDocuments / limit);
+    
+    const currentPage = Math.min(Math.max(page,1),totalPages);
+    const skip = (currentPage - 1) * limit;
+
+    const meeting = await meetingModel.find(querySearch).populate({path:"host",select:["name"]}).populate({path:"participants",select:["name"]}).skip(skip).limit(limit);
 
     res.status(200).json({
       message: "success",
+      totalDocuments,
+      limit,
+      totalPages,
       meeting,
     });
   } catch (error) {
-    res.status(401).json({
+    res.status(404).json({
       success: false,
       message: error,
     });
@@ -105,11 +106,10 @@ exports.joinMeeting = asyncHandler(async (req, res, next) => {
       });
     }
 
-
     res.status(404).json({
-      success:false,
-      message:"This user is not invited",
-    })
+      success: false,
+      message: "This user is not invited",
+    });
   } catch (error) {
     next(error);
   }

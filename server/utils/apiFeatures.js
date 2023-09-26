@@ -25,10 +25,10 @@ class apiFeatures {
 
     let host = this.queryStr.host
       ? {
-          host: [{
+          host: {
             $regex: this.queryStr.host,
             $options: "i",
-          }],
+          },
         }
       : {};
 
@@ -41,8 +41,7 @@ class apiFeatures {
 
     this.query.find({ ...keyword });
     this.query.find({ ...name });
-    this.query.find({...host})
-    this.query.find({...participants})
+    
     return this;
   }
 

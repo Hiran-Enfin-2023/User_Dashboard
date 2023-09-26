@@ -7,10 +7,21 @@ import { FaTrash, FaEdit, FaUndoAlt } from 'react-icons/fa'
 function AdminTable() {
     const navigate = useNavigate();
     const [meetings, setMeetings] = useState();
+    const [searchData, setSearchData] = useState("")
     const [page, setPage] = useState(1)
+    const [totalPage, setTotalPage] = useState()
+    const [limit, setLimit] = useState()
     const fetchMeetings = async () => {
-        const res = await axiosInstance.get(`/meeting/all/meetings/?page=${page}`);
-        setMeetings(res.data.meeting)
+        try {
+            const res = await axiosInstance.get(`/meeting/all/meetings/?page=${page}&meetingTitle=${searchData}`);
+
+            setMeetings(res.data.meeting)
+            console.log(res.data);
+            setLimit(res.data.limit)
+            setTotalPage(res.data.totalDocuments)
+        } catch (error) {
+
+        }
     }
     console.log(meetings);
     const deActivateMeeting = async (id) => {
@@ -24,13 +35,17 @@ function AdminTable() {
 
     useEffect(() => {
         fetchMeetings();
-    }, [page])
+    }, [page, searchData])
 
     const selectPageHanlder = (page) => {
         if (page > 0) {
 
             setPage(page)
         }
+    }
+
+    const onSearchChange = (e) => {
+        setSearchData(e.target.value)
     }
 
     return (
@@ -40,18 +55,18 @@ function AdminTable() {
                     <h2>Meetings</h2>
                 </div>
                 <div className="header-search">
-                <form
-                    className="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                    <div className="input-group">
-                        <input style={{width:"400px",height:"50px"}} type="text" className="form-control bg-white  border-1 small" placeholder="Search for..."
-                            aria-label="Search" aria-describedby="basic-addon2" />
-                        <div className="input-group-append">
-                            <button style={{height:"50px",width:"50px"}} className="btn btn-primary " type="button">
-                                <i className="fas fa-search fa-sm"></i>
-                            </button>
+                    <form
+                        className="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div className="input-group">
+                            <input value={searchData} onChange={onSearchChange} style={{ width: "400px", height: "50px" }} type="text" className="form-control bg-white  border-1 small" placeholder="Search for..."
+                                aria-label="Search" aria-describedby="basic-addon2" />
+                            <div className="input-group-append">
+                                <button style={{ height: "50px", width: "50px" }} className="btn btn-primary " type="button">
+                                    <i className="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
 
                 </div>
                 <div className="meeting-btn">
@@ -71,7 +86,7 @@ function AdminTable() {
                                         <th>
                                             No
                                         </th>
-                                        <th className='text-center '>
+                                        <th className='text-center w-25 '>
                                             Name of the meeting
                                         </th>
                                         <th className='text-center'>
@@ -92,25 +107,25 @@ function AdminTable() {
                                     </tr>
                                 </thead>
                                 {
-                                    meetings.map((val, i) => {
+                                    meetings?.map((val, i) => {
                                         return (
                                             <tbody key={i}>
                                                 <tr>
                                                     <th>
                                                         {i + 1}
                                                     </th>
-                                                    <td className='text-center '>{val.meetingTitle}</td>
-                                                    <td className='text-center'>
+                                                    <td className='text-center w-25'>{val.meetingTitle}</td>
+                                                    <td className='text-center' style={{height:"25px"}}>
                                                         {val.host.map((h, i) => {
                                                             return (
-                                                                <div key={i}>{h.name}</div>
+                                                                <div className='w-100' key={i}>{h.name}</div>
                                                             )
                                                         })}
                                                     </td>
                                                     <td className='text-center d-flex justify-content-between'>
                                                         {val.participants.map((p, i) => {
                                                             return (
-                                                                <div key={i}>{p.name},</div>
+                                                                <div className='w-70' key={i}>{p.name},</div>
                                                             )
                                                         })}
                                                     </td>
@@ -148,15 +163,23 @@ function AdminTable() {
 
             {
 
-                meetings?.length > 0 && <div style={{  padding: "10px", justifyContent: "center" }} className="pagination mt-2">
+                meetings?.length > 0 && <div style={{ padding: "10px", justifyContent: "center" }} className="pagination mt-2">
                     <div>
 
-                        <span ><BiSolidLeftArrow style={{ height: "20px", width: "20px" }} onClick={() => selectPageHanlder(page - 1)} /> </span>
-                        <span style={{ fontSize: "18px" }}>{page}</span>
-                        <span onClick={() => selectPageHanlder(page + 1)}><BiSolidRightArrow style={{ height: "20px", width: "20px" }} /></span>
+                        <span ><BiSolidLeftArrow className={page < meetings.length ?  "opacity-0" : ""  } style={{ height: "20px", width: "20px", cursor: "pointer", color: "blue" }} onClick={() => selectPageHanlder(page - 1)} /> </span>
+                        {
+                            [...Array(Math.ceil(totalPage / limit) )].map((_, i) => {
+                                return <span className={page=== i + 1 ? "border border-primary rounded p-1" : ""} onClick={()=>selectPageHanlder(i+1)} style={{ fontSize: "18px", margin: "5px", cursor: "pointer" }}>{i + 1}</span>
+
+                            })
+                        }
+
+                        <span onClick={() => selectPageHanlder(page + 1)}><BiSolidRightArrow className={page > meetings.length ?  "opacity-0" : ""  } style={{ cursor: "pointer", height: "20px", width: "20px", color: "blue"  }} /></span>
                     </div>
                 </div>
             }
+
+
 
         </div>
     )
