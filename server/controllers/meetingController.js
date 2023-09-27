@@ -1,8 +1,8 @@
-const crypto = require("crypto");
+
 const meetingModel = require("../models/meetingModel");
 const asyncHandler = require("express-async-handler");
 const { throwError } = require("../middleware/error");
-const apiFeatures = require("../utils/apiFeatures");
+const mongoose = require('mongoose');
 
 // @desc create a new meeting
 // @route POST  => /api/meeting/addMeeting
@@ -115,7 +115,6 @@ exports.meetings = asyncHandler(async (req, res, next) => {
       { $limit: limit },
     ]);
 
-    
     res.status(200).json({
       success: true,
       totalPages,
@@ -249,6 +248,36 @@ exports.deActivate = asyncHandler(async (req, res, next) => {
       changeMeeting,
       // meetingStatus
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+exports.invitedMeeting = asyncHandler(async (req, res, next) => {
+  
+  try {
+
+    const querySearch = {
+      $or: [
+        { meetingTitle: { $regex: new RegExp(query, "i") } },
+        { slug: { $regex: new RegExp(query, "i") } },
+        { "participantList.name": { $regex: new RegExp(query, "i") } },
+        { "hostList.name": { $regex: new RegExp(query, "i") } },
+      ],
+    };
+
+    
+
+    const userInvitedMeeting = await meetingModel
+      .find({ participants: new mongoose.Types.ObjectId(req.userId) })
+      .populate({ path: "participants", select: ["name"] }).populate({path:"host",select:["name"]});
+
+    if (userInvitedMeeting) {
+      res.status(200).json({
+        success: true,
+        userInvitedMeeting,
+      });
+    }
   } catch (error) {
     next(error);
   }

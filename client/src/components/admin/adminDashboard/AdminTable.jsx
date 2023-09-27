@@ -4,6 +4,8 @@ import { HiPlus } from "react-icons/hi"
 import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi"
 import axiosInstance from '../../../axios';
 import { FaTrash, FaEdit, FaUndoAlt } from 'react-icons/fa'
+import Dropdown from 'react-bootstrap/Dropdown';
+import { BsThreeDotsVertical } from "react-icons/bs"
 function AdminTable() {
     const navigate = useNavigate();
     const [meetings, setMeetings] = useState();
@@ -21,9 +23,9 @@ function AdminTable() {
         } catch (error) {
             console.log(error);
         }
-    
+
     }
-    
+
     const deActivateMeeting = async (id) => {
         const res = await axiosInstance.patch(`/meeting/deactivate/${id}`)
         // console.log(res);
@@ -115,7 +117,7 @@ function AdminTable() {
                                                         {i + 1}
                                                     </th>
                                                     <td className='text-center w-25'>{val.meetingTitle}</td>
-                                                    <td className='text-center' style={{height:"25px"}}>
+                                                    <td className='text-center' style={{ height: "25px" }}>
                                                         {val.hostList.map((h, i) => {
                                                             return (
                                                                 <div className='w-100' key={i}>{h.name}</div>
@@ -123,27 +125,44 @@ function AdminTable() {
                                                         })}
                                                     </td>
                                                     <td className='text-center d-flex justify-content-between'>
-                                                        {val.participantList.map((p, i) => {
+                                                        {/* {val.participantList.map((p, i) => {
                                                             return (
                                                                 <div className='w-70' key={i}>{p.name},</div>
                                                             )
-                                                        })}
+                                                        })} */}
+                                                        <div className='w-70' key={i}>{`${val.participantList[0].name} & ${val.participantList.length - 1}`},</div>
                                                     </td>
                                                     <td className='text-center'>{val.meetingDate}</td>
                                                     <td className='text-center'>{
                                                         val.meetingStatus ? <div className='bg-success rounded '>Active </div> : <div className='bg-danger rounded'>InActive</div>
                                                     }</td>
                                                     <td className='text-center d-flex justify-content-between'>
-                                                        <div className='text-center text-primary'>
-                                                            <Link to={`/admin/edit/${val._id}`}>
-                                                                <FaEdit />
-                                                            </Link>
-                                                        </div>
-                                                        <div className="text-center">
-                                                            {val.meetingStatus ?
-                                                                <FaTrash onClick={() => deActivateMeeting(val._id)} style={{ cursor: "pointer", color: "red" }} /> :
-                                                                <FaUndoAlt onClick={() => deActivateMeeting(val._id)} style={{ cursor: "pointer", color: "green" }} />}
-                                                        </div>
+
+                                                        <Dropdown>
+                                                            <Dropdown.Toggle style={{ opacity: "0px", backgroundColor: "white", color: "white", border: "none" }} >
+                                                                <BsThreeDotsVertical style={{ color: "black" }} />
+                                                            </Dropdown.Toggle>
+
+                                                            <Dropdown.Menu>
+                                                                <Dropdown.Item >
+                                                                    <Link style={{ display: "flex", justifyContent: "space-evenly", alignItems:"center" }} to={`/admin/edit/${val._id}`}>
+                                                                        <FaEdit style={{ height: "22px", width: "22px",marginBottom:"7px" }} />
+                                                                        <h6 style={{marginTop:"2px"}}>Edit</h6>
+                                                                    </Link>
+                                                                </Dropdown.Item>
+
+                                                                <Dropdown.Item>
+                                                                    <div style={{display:"flex", justifyContent:"space-evenly"}} >
+
+                                                                        {val.meetingStatus ?
+                                                                            <FaTrash  onClick={() => deActivateMeeting(val._id)} style={{ cursor: "pointer", color: "red", height: "22px", width: "22px"}} /> :
+                                                                            <FaUndoAlt onClick={() => deActivateMeeting(val._id)} style={{ cursor: "pointer", color: "green",height: "22px", width: "22px" }} />}
+                                                                    <h6>Change</h6>
+                                                                    </div>
+                                                                </Dropdown.Item>
+                                                            </Dropdown.Menu>
+                                                        </Dropdown>
+
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -166,15 +185,15 @@ function AdminTable() {
                 meetings?.length > 0 && <div style={{ padding: "10px", justifyContent: "center" }} className="pagination mt-2">
                     <div>
 
-                        <span ><BiSolidLeftArrow className={page <= 1 ?  "opacity-0 " : ""  } style={{ height: "20px", width: "20px", cursor: "pointer", color: "blue" }} onClick={() => selectPageHanlder(page - 1)} /> </span>
+                        <span ><BiSolidLeftArrow className={page <= 1 ? "opacity-0 " : ""} style={{ height: "20px", width: "20px", cursor: "pointer", color: "blue" }} onClick={() => selectPageHanlder(page - 1)} /> </span>
                         {
-                            [...Array(Math.ceil(totalDocument / limit) )].map((_, i) => {
-                                return <span className={page=== i + 1 ? "border border-primary rounded p-1" : ""} onClick={()=>selectPageHanlder(i+1)} style={{ fontSize: "18px", margin: "5px", cursor: "pointer" }}>{i + 1}</span>
+                            [...Array(Math.ceil(totalDocument / limit))].map((_, i) => {
+                                return <span className={page === i + 1 ? "border border-primary rounded p-1" : ""} onClick={() => selectPageHanlder(i + 1)} style={{ fontSize: "18px", margin: "5px", cursor: "pointer" }}>{i + 1}</span>
 
                             })
                         }
 
-                        <span onClick={() => selectPageHanlder(page + 1)}><BiSolidRightArrow className={page > meetings.length ?  "opacity-0" : ""  } style={{ cursor: "pointer", height: "20px", width: "20px", color: "blue"  }} /></span>
+                        <span onClick={() => selectPageHanlder(page + 1)}><BiSolidRightArrow className={page > meetings.length ? "opacity-0" : ""} style={{ cursor: "pointer", height: "20px", width: "20px", color: "blue" }} /></span>
                     </div>
                 </div>
             }

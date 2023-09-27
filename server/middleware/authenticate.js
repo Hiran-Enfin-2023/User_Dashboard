@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 exports.authenticateUser = (req,res,next)=>{
 const token = req.headers.authorization;
-// console.log(token);
+
 if(!token){
     res.status(401).json({
         message:"your are not authenticated"
@@ -14,7 +14,7 @@ if(!token){
                 message:"No valid token"
             })
         }else{
-            console.log("data",user.id);
+            
             req.userId = user.id;
 
             next()

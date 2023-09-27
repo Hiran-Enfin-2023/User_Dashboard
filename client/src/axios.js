@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(async (config) => {
   // console.log("instance", config);
-  const token = localStorage.getItem("access_token");
+  const token = localStorage.getItem("user_token");
   const auth = token ? `${token}` : "";
 
   config.headers.Authorization = auth;
