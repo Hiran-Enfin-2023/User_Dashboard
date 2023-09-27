@@ -33,14 +33,5 @@ const userSchema = mongoose.Schema({
 })
 
 
-userSchema.methods.getResetToken = function(){
-  const token = crypto.randomBytes(20).toString('hex')
-
-  this.resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex')
-
-this.resetPasswordTokenExpired = Date.now() + 30 * 60 *1000
-
-return this.resetPasswordToken
-}
 
 module.exports = mongoose.model("user",userSchema);

@@ -9,21 +9,21 @@ function AdminTable() {
     const [meetings, setMeetings] = useState();
     const [searchData, setSearchData] = useState("")
     const [page, setPage] = useState(1)
-    const [totalPage, setTotalPage] = useState()
+    const [totalDocument, setTotalDocument] = useState()
     const [limit, setLimit] = useState()
     const fetchMeetings = async () => {
         try {
-            const res = await axiosInstance.get(`/meeting/all/meetings/?page=${page}&meetingTitle=${searchData}`);
+            const res = await axiosInstance.get(`/meeting/all/meetings/?page=${page}&keyword=${searchData}`);
 
-            setMeetings(res.data.meeting)
-            console.log(res.data);
+            setMeetings(res.data.meetingsAgg)
             setLimit(res.data.limit)
-            setTotalPage(res.data.totalDocuments)
+            setTotalDocument(res.data.count)
         } catch (error) {
-
+            console.log(error);
         }
+    
     }
-    console.log(meetings);
+    
     const deActivateMeeting = async (id) => {
         const res = await axiosInstance.patch(`/meeting/deactivate/${id}`)
         // console.log(res);
@@ -116,14 +116,14 @@ function AdminTable() {
                                                     </th>
                                                     <td className='text-center w-25'>{val.meetingTitle}</td>
                                                     <td className='text-center' style={{height:"25px"}}>
-                                                        {val.host.map((h, i) => {
+                                                        {val.hostList.map((h, i) => {
                                                             return (
                                                                 <div className='w-100' key={i}>{h.name}</div>
                                                             )
                                                         })}
                                                     </td>
                                                     <td className='text-center d-flex justify-content-between'>
-                                                        {val.participants.map((p, i) => {
+                                                        {val.participantList.map((p, i) => {
                                                             return (
                                                                 <div className='w-70' key={i}>{p.name},</div>
                                                             )
@@ -166,9 +166,9 @@ function AdminTable() {
                 meetings?.length > 0 && <div style={{ padding: "10px", justifyContent: "center" }} className="pagination mt-2">
                     <div>
 
-                        <span ><BiSolidLeftArrow className={page < meetings.length ?  "opacity-0" : ""  } style={{ height: "20px", width: "20px", cursor: "pointer", color: "blue" }} onClick={() => selectPageHanlder(page - 1)} /> </span>
+                        <span ><BiSolidLeftArrow className={page <= 1 ?  "opacity-0 " : ""  } style={{ height: "20px", width: "20px", cursor: "pointer", color: "blue" }} onClick={() => selectPageHanlder(page - 1)} /> </span>
                         {
-                            [...Array(Math.ceil(totalPage / limit) )].map((_, i) => {
+                            [...Array(Math.ceil(totalDocument / limit) )].map((_, i) => {
                                 return <span className={page=== i + 1 ? "border border-primary rounded p-1" : ""} onClick={()=>selectPageHanlder(i+1)} style={{ fontSize: "18px", margin: "5px", cursor: "pointer" }}>{i + 1}</span>
 
                             })

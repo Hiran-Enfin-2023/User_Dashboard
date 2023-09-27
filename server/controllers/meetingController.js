@@ -39,41 +39,98 @@ exports.createMeeting = asyncHandler(async (req, res, next) => {
   }
 });
 
-exports.meetings = asyncHandler(async (req, res) => {
+exports.meetings = asyncHandler(async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 3;
 
-    
-    
-    
-    const meetingName = req.query.meetingTitle;
-    
-    const querySearch = meetingName ? {
-      $or: [{ meetingTitle: { $regex: new RegExp(meetingName, "i") } }]
-    } : {}
-    
-    
-    const totalDocuments = await meetingModel.countDocuments(querySearch);
-    const totalPages = Math.ceil(totalDocuments / limit);
-    
-    const currentPage = Math.min(Math.max(page,1),totalPages);
+    const query = req.query.keyword;
+
+    const querySearch = {
+      $or: [
+        { meetingTitle: { $regex: new RegExp(query, "i") } },
+        { slug: { $regex: new RegExp(query, "i") } },
+        { "participantList.name": { $regex: new RegExp(query, "i") } },
+        { "hostList.name": { $regex: new RegExp(query, "i") } },
+      ],
+    };
+
+    const meetingsCount = await meetingModel.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "participants",
+          foreignField: "_id",
+          as: "participantList",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "host",
+          foreignField: "_id",
+          as: "hostList",
+        },
+      },
+      { $match: querySearch },
+      { $group: { _id: null, n: { $sum: 1 } } },
+    ]);
+
+    const dataCount = meetingsCount[0].n;
+    const totalPages = Math.ceil(dataCount / limit);
+
+    const currentPage = Math.min(Math.max(page, 1), totalPages);
+
     const skip = (currentPage - 1) * limit;
 
-    const meeting = await meetingModel.find(querySearch).populate({path:"host",select:["name"]}).populate({path:"participants",select:["name"]}).skip(skip).limit(limit);
+    const meetingsAgg = await meetingModel.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "participants",
+          foreignField: "_id",
+
+          as: "participantList",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "host",
+          foreignField: "_id",
+
+          as: "hostList",
+        },
+      },
+      { $match: querySearch },
+      {
+        $project: {
+          "participantList.password": 0,
+          participant: 0,
+          host: 0,
+          "hostList.password": 0,
+        },
+      },
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+
+    
+    res.status(200).json({
+      success: true,
+      totalPages,
+      count: dataCount,
+      limit,
+      meetingsAgg,
+    });
+    console.log(meetingsCount);
 
     res.status(200).json({
       message: "success",
-      totalDocuments,
-      limit,
-      totalPages,
       meeting,
     });
   } catch (error) {
-    res.status(404).json({
-      success: false,
-      message: error,
-    });
+    next(error);
   }
 });
 
