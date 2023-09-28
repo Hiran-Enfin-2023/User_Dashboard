@@ -1,13 +1,13 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import UserPage from "../../pages/user/UserPage";
-import JoinMeeting from "../../pages/joinMeeting/JoinMeeting";
 import LoggedUser from "./LoggedUser";
 import NotLoggedUser from "./NotLoggedUser";
 import Login from "../../components/login/Login";
 import Register from "../../components/register/Register";
 import ForgotPassword from "../../components/resetPassword/ForgotPassword";
 import ResetPassword from "../../components/resetPassword/ResetPassword";
+import MeetingPage from "../../pages/meetingPage/MeetingPage";
 
 function UserIndex() {
   return (
@@ -15,7 +15,7 @@ function UserIndex() {
       <Routes>
         <Route element={<LoggedUser />}>
           <Route path="/" element={<UserPage />} />
-          <Route path='/meeting/slug' element={<JoinMeeting />} />
+          <Route path='/meeting/:slug' element={<MeetingPage />} />
         </Route>
         <Route element={<NotLoggedUser />}>
           <Route path="/login" element={<Login />} />

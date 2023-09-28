@@ -9,7 +9,7 @@ function AdminPage() {
       <div style={{ height: "100%", width: "100%" }} className='d-flex'>
         <Sidebar/>
         <div className="adminPage w-100">
-          <Header />
+          {/* <Header /> */}
           <AdminTable/>
         </div>
       </div>

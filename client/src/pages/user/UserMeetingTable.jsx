@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import Table from 'react-bootstrap/Table';
 import axiosInstance from '../../axios';
+import { Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 function UserMeetingTable() {
 
     const [userMeeting, setUserMeeting] = useState([])
+
     const fetchInvitedMeeting = async () => {
         const res = await axiosInstance.get("/meeting/user/invited/");
         console.log(res.data.userInvitedMeeting);
-        setUserMeeting(res.data.userInvitedMeeting)
+        setUserMeeting(res.data.userInvitedMeeting);
+       
     }
-    console.log(userMeeting);
+   
     useEffect(() => {
         fetchInvitedMeeting();
     }, [])
@@ -72,6 +76,13 @@ function UserMeetingTable() {
                                             }
                                         </td>
                                         <td>{e.meetingDate}</td>
+
+                                        <td className='d-flex justify-content-center'>
+                                            <Link to={`/meeting/${e.slug}`} >
+                                            <Button style={{backgroundColor:"#00BFFF", color:"black"}}>Join</Button>
+                                            
+                                            </Link>
+                                        </td>
 
                                     </tr>
                                 )

@@ -130,9 +130,9 @@ function AdminTable() {
                                                                 <div className='w-70' key={i}>{p.name},</div>
                                                             )
                                                         })} */}
-                                                        <div className='w-70' key={i}>{`${val.participantList[0].name} & ${val.participantList.length - 1}`},</div>
+                                                        <div className='w-70' key={i}>{`${val.participantList[0].name} & ${val.participantList.length - 1}`} other,</div>
                                                     </td>
-                                                    <td className='text-center'>{val.meetingDate}</td>
+                                                    <td className='text-center'>{val.meetingDate.toLocaleString()}</td>
                                                     <td className='text-center'>{
                                                         val.meetingStatus ? <div className='bg-success rounded '>Active </div> : <div className='bg-danger rounded'>InActive</div>
                                                     }</td>
@@ -193,7 +193,7 @@ function AdminTable() {
                             })
                         }
 
-                        <span onClick={() => selectPageHanlder(page + 1)}><BiSolidRightArrow className={page > meetings.length ? "opacity-0" : ""} style={{ cursor: "pointer", height: "20px", width: "20px", color: "blue" }} /></span>
+                        <span onClick={() => selectPageHanlder(page + 1)}><BiSolidRightArrow className={page > meetings.length-1 ? "opacity-0" : ""} style={{ cursor: "pointer", height: "20px", width: "20px", color: "blue" }} /></span>
                     </div>
                 </div>
             }

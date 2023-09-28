@@ -4,14 +4,8 @@ const jwt = require("jsonwebtoken");
 const { throwError } = require("../middleware/error");
 const asyncHandler = require("express-async-handler");
 const apiFeatures = require("../utils/apiFeatures");
-const sendMail = require("../utils/Mail");
-const SibApiV3Sdk = require("sib-api-v3-sdk");
+const { createTransport } = require("nodemailer");
 const htmlContent = require("../utils/template");
-const defaultClient = SibApiV3Sdk.ApiClient.instance;
-const axios = require("axios")
-const apiKey = defaultClient.authentications["api-key"];
-apiKey.apiKey = process.env.EMAIL_API_KEY;
-
 
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, email, phoneNumber, password, confirmPassword } = req.body;
@@ -119,7 +113,6 @@ exports.allUser = asyncHandler(async (req, res, next) => {
 
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
   try {
-    console.log(req.body.email);
     const user = await userModel
       .findOne({ email: req.body.email })
       .select("-password");
@@ -130,41 +123,43 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
     }
     const id = user._id;
 
-    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-    const sender = {
-      email: "hirankvlr@gmail.com",
-      name: "Hiran Raj",
-    };
-
-    const receiver = [
-      {
-        email: req.body.email,
-      },
-    ];
-
     const token = jwt.sign({ _id: id }, process.env.JWT_SECRET_KEY);
 
     const resetUrl = `http://localhost:3000/password/reset/${token}`;
     const message = `Your password reset url is as follows \n\n ${resetUrl} \n\n if you haven't requested for the password recovery, then ignore it`;
 
-   const sendMail = await apiInstance.sendTransacEmail( {
-      sender,
-      to: receiver,
-      subject: "Password recovery mail",
-      htmlContent: htmlContent(message),
-    })
+    const transporter = createTransport({
+      host: "smtp-relay.brevo.com",
+      port: 587,
+      auth: {
+        user: "hirankvlr@gmail.com",
+        pass: "JEWmy5FqKcYd0NzD",
+      },
+    });
 
+    const mailOptions = {
+      from: "hirankvlr@gmail.com",
+      to: req.body.email,
+      subject: `Email Recovery`,
+      html: htmlContent(message),
+    };
+
+   const sendMail =  transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
     res.status(200).json({
-      success:true,
+      success: true,
       sendMail,
 
-      user:{
+      user: {
         user,
-        token
-      }
-    })
-
-    
+        token,
+      },
+    });
   } catch (err) {
     next(err);
   }

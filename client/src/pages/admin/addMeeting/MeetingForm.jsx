@@ -30,7 +30,8 @@ function MeetingForm() {
     setSlug(e.target.value)
   }
   const onDateChange = (e) => {
-    setMeetingDateDate(e)
+    
+    setMeetingDateDate(format(new Date(e), 'yyyy-MM-dd'))
   }
   const onHostChange = (e) => {
     setHost(e)
@@ -72,7 +73,7 @@ function MeetingForm() {
     e.preventDefault()
     const res = await axiosInstance.post("/meeting/addMeeting", { joinData })
 
-    console.log(res.data.meetingDate);
+    console.log(res.data);
     if (res.data.success) {
       alert("Meeting scheduled")
     } else {
@@ -142,7 +143,7 @@ function MeetingForm() {
                 <span>{`${format(meetingDate, "dd/MM/yyyy")}`}</span>
                 {
                   openDate && (
-                    <DatePicker onChange={onDateChange} name='meetingDate' value={meetingDate} minDate={new Date()} />
+                    <DatePicker type="text" onChange={onDateChange} name='meetingDate' value={ meetingDate} minDate={new Date()} />
                   )
                 }
               </div>

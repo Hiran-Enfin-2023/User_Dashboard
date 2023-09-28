@@ -1,9 +1,8 @@
-
 const meetingModel = require("../models/meetingModel");
 const asyncHandler = require("express-async-handler");
 const { throwError } = require("../middleware/error");
-const mongoose = require('mongoose');
-
+const mongoose = require("mongoose");
+const { fork } = require("child_process");
 // @desc create a new meeting
 // @route POST  => /api/meeting/addMeeting
 // @access  Admin
@@ -20,14 +19,24 @@ exports.createMeeting = asyncHandler(async (req, res, next) => {
       participants,
       host,
       slug: slug.toLowerCase(),
-      meetingTime: new Date(meetingDate),
+      // meetingTime: new Date(meetingDate)
+      meetingDate: meetingDate,
     });
 
-    console.log(addMeeting);
+    // console.log(addMeeting);
     const meeting = await meetingModel
       .findById({ _id: addMeeting._id })
       .populate({ path: "host", select: ["name", "email"] })
       .populate({ path: "participants", select: ["name", "email"] });
+
+    const child = fork("./utils/Mail");
+ 
+    child.send({ meeting: meeting });
+    child.on("exit", (data, signal) => {
+      console.log(
+        "Child process exited with a code of" + data
+      );
+    });
 
     res.status(200).json({
       success: true,
@@ -254,30 +263,53 @@ exports.deActivate = asyncHandler(async (req, res, next) => {
 });
 
 exports.invitedMeeting = asyncHandler(async (req, res, next) => {
-  
   try {
+    // const querySearch = {
+    //   $or: [
+    //     { meetingTitle: { $regex: new RegExp(query, "i") } },
+    //     { slug: { $regex: new RegExp(query, "i") } },
+    //     { "participantList.name": { $regex: new RegExp(query, "i") } },
+    //     { "hostList.name": { $regex: new RegExp(query, "i") } },
+    //   ],
+    // };
 
-    const querySearch = {
-      $or: [
-        { meetingTitle: { $regex: new RegExp(query, "i") } },
-        { slug: { $regex: new RegExp(query, "i") } },
-        { "participantList.name": { $regex: new RegExp(query, "i") } },
-        { "hostList.name": { $regex: new RegExp(query, "i") } },
-      ],
-    };
+    // const reqDate = new Date(req.query.date);
+    // console.log(reqDate.toLocaleDateString());
+    // const newDate = new Intl.DateTimeFormat("en-in",{
+    //   dateStyle:"full"
+    // })
 
-    
+    // const pastMeeting = await meetingModel
+    //   .find({
+    //     $or: [
+    //       { participants: new mongoose.Types.ObjectId(req.userId) },
+    //       { meetingDate: { $lt: reqDate } },
+    //     ],
+    //   })
+    //   .populate({ path: "participants", select: ["name"] })
+    //   .populate({ path: "host", select: ["name"] });
+
+    // const upcomingMeeting = await meetingModel
+    //   .find({
+    //     $or: [
+    //       { participants: new mongoose.Types.ObjectId(req.userId) },
+    //       { meetingDate: { $gt: reqDate } },
+    //     ],
+    //   })
+    //   .populate({ path: "participants", select: ["name"] })
+    //   .populate({ path: "host", select: ["name"] });
 
     const userInvitedMeeting = await meetingModel
-      .find({ participants: new mongoose.Types.ObjectId(req.userId) })
-      .populate({ path: "participants", select: ["name"] }).populate({path:"host",select:["name"]});
+      .find({
+        $or: [{ participants: new mongoose.Types.ObjectId(req.userId) }],
+      })
+      .populate({ path: "participants", select: ["name"] })
+      .populate({ path: "host", select: ["name"] });
 
-    if (userInvitedMeeting) {
-      res.status(200).json({
-        success: true,
-        userInvitedMeeting,
-      });
-    }
+    res.status(200).json({
+      success: true,
+      userInvitedMeeting,
+    });
   } catch (error) {
     next(error);
   }
