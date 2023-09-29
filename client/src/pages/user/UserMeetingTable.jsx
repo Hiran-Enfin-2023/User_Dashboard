@@ -54,14 +54,14 @@ function UserMeetingTable() {
                         {
                             userMeeting?.map((e, i) => {
                                 return (
-                                    <tr>
+                                    <tr key={i}>
                                         <td>{i + 1}</td>
                                         <td>{e.meetingTitle}</td>
                                         <td>
                                             {
                                                 e.host.map((host, i) => {
                                                     return (
-                                                        <h6>{host.name}</h6>
+                                                        <h6 key={i}>{host.name}</h6>
                                                     )
                                                 })
                                             }
@@ -70,7 +70,7 @@ function UserMeetingTable() {
                                             {
                                                 e.participants.map((p, i) => {
                                                     return (
-                                                        <h6>{p.name}</h6>
+                                                        <h6 key={i}>{p.name}</h6>
                                                     )
                                                 })
                                             }
