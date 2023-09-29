@@ -8,7 +8,7 @@ import "./ChatBox.css"
 function ChatBox({ socket, room, user }) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
-
+  const [typingUser, setTypingUser] = useState()
   console.log(user);
   const sendMessage = async () => {
     if (currentMessage !== "") {
@@ -28,10 +28,20 @@ function ChatBox({ socket, room, user }) {
     }
   };
 
+  const onSubmitChange = (event) => {
+
+    setCurrentMessage(event.target.value);
+    // socket.emit('is typing', user)
+
+  }
+
   useEffect(() => {
     socket.on("receive_message", (data) => {
       setMessageList((list) => [...list, data]);
     });
+    socket.on('typing', (data) => {
+      setTypingUser(data)
+    })
     // return()=>{
     //   socket.off("send_message")
     // }
@@ -41,7 +51,8 @@ function ChatBox({ socket, room, user }) {
   return (
     <div className="chat-window">
       <div className="chat-header">
-        <p>Live Chat</p>
+        <p style={{height:"50%"}}>Live Chat</p>
+        {/* <p style={{ height:"50%"}}>{!typingUser && !currentMessage ? null : `${typingUser} is typing...`}</p> */}
       </div>
       <div className="chat-body">
         <ScrollToBottom className="message-container">
@@ -73,9 +84,7 @@ function ChatBox({ socket, room, user }) {
           type="text"
           value={currentMessage}
           placeholder="Message..."
-          onChange={(event) => {
-            setCurrentMessage(event.target.value);
-          }}
+          onChange={onSubmitChange}
           onKeyPress={(event) => {
             event.key === "Enter" && sendMessage();
           }}

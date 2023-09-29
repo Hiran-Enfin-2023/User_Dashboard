@@ -28,7 +28,7 @@
     height: 80%;
     width: auto;
     border: 1px solid #263238;
-    background: #ffffff;
+    background: #cfcfcf;
     position: relative;
 }
 
@@ -63,8 +63,8 @@
     min-height: 40px;
     min-width: 100px;
     max-width: 150px;
-    background-color: #000000;
-    color: white;
+    background-color: #fdfdfd;
+    color: rgb(0, 0, 0);
     /* display: flex; */
     align-items: center;
     justify-content: space-between;
@@ -83,7 +83,7 @@
     margin-right: 5px;
 }
 .chat-window .chat-body .message .message-content .time #time{
-    color: white;
+    color: rgb(0, 0, 0);
 }
 #you {
     justify-content: flex-start;
@@ -98,7 +98,7 @@
 #you .message-meta {
     justify-content: space-between;
     margin-left: 5px;
-    background-color: red; 
+    /* background-color: red;  */
 }
 
 #other {
@@ -108,7 +108,7 @@
 
 #other .message-content {
     justify-content: flex-start;
-    background-color: #0c4df1;
+    /* background-color: #0c4df1; */
     border-radius: 15px 0px 15px 15px;
     padding-left: 10px;
 }

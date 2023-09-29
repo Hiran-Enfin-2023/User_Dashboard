@@ -30,12 +30,10 @@ exports.createMeeting = asyncHandler(async (req, res, next) => {
       .populate({ path: "participants", select: ["name", "email"] });
 
     const child = fork("./utils/Mail");
- 
+
     child.send({ meeting: meeting });
     child.on("exit", (data, signal) => {
-      console.log(
-        "Child process exited with a code of" + data
-      );
+      console.log("Child process exited with a code of" + data);
     });
 
     res.status(200).json({
@@ -156,25 +154,35 @@ exports.joinMeeting = asyncHandler(async (req, res, next) => {
       .populate({ path: "host", select: ["name", "email"] })
       .populate({ path: "participants", select: ["name", "email"] });
 
-    if (
-      meeting?.host.map((e) => {
-        e._id == user_id;
-      }) ||
-      meeting?.participants.map((e) => {
-        e._id == user_id;
-      })
-    ) {
-      res.status(200).json({
-        success: true,
-        meeting,
-        user_id,
-      });
-    }
+    console.log(meeting.meetingStatus);
 
-    res.status(404).json({
-      success: false,
-      message: "This user is not invited",
-    });
+    if (meeting.meetingStatus) {
+      if (
+        meeting?.host.map((e) => {
+          e._id == user_id;
+        }) ||
+        meeting?.participants.map((e) => {
+          e._id == user_id;
+        })
+      ) {
+        res.status(200).json({
+          success: true,
+          meeting,
+          user_id,
+        });
+      }else{
+        res.status(404).json({
+          success: false,
+          message: "This user is not invited",
+        });
+      }
+    }else{
+      res.status(404).json({
+        success: false,
+        message:"Currently this meeting is not active"
+      })
+    }
+    
   } catch (error) {
     next(error);
   }

@@ -27,6 +27,11 @@ io.on("connection", (socket) => {
     console.log(data.room.slug);
   });
 
+  socket.on('is typing', (data)=>{
+    console.log(data);
+    socket.broadcast.emit('typing', data);
+   });
+
   socket.on("disconnect", () => {
     console.log("User Disconnected", socket.id);
   });
