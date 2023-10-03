@@ -23,7 +23,7 @@ function ChatBox({ socket, room, user }) {
       };
 
       await socket.emit("send_message", messageData);
-      setMessageList((list) => [...list, messageData]);
+      // setMessageList((list) => [...list, messageData]);
       setCurrentMessage("");
     }
   };
