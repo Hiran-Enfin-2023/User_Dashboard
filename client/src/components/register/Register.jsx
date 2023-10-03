@@ -6,8 +6,6 @@ import { Link } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Header from '../Header/Header';
 import { FaEye, FaEyeSlash } from "react-icons/fa"
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
 import { useForm } from "react-hook-form"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -40,7 +38,9 @@ function Register() {
     phoneNumber: "",
     password: "",
     confirmPassword: ""
-  })
+  });
+
+  const [image, setImage] = useState("")
 
   const { register, handleSubmit, formState: { errors } } = useForm({ resolver: yupResolver(schema) })
   // const onSubmit = (data) => { console.log(data); }
@@ -54,14 +54,17 @@ function Register() {
     })
   }
 
+  
+
   // console.log(inputValues);
   const onSubmit = async () => {
-    
+
     const { name, email, phoneNumber, password, confirmPassword } = inputValues;
 
     if (name === " ") {
       alert("Fill the require fields")
     } else {
+      
       const res = await axios.post("/auth/register", { name, email, phoneNumber, password, confirmPassword })
 
       if (res.status === 200 || res.data.success) {
@@ -109,6 +112,8 @@ function Register() {
             {errors.confirmPassword && <p style={{ color: "red" }} role="alert">*{errors.confirmPassword?.message}</p>}
           </Form.Group>
 
+
+         
           <div>
             {/* <Button style={{ width: "100%" }} onClick={submitForm}>Submit</Button> */}
             <Button style={{ width: "100%" }} type='submit'>Submit</Button>

@@ -20,8 +20,9 @@ const userSchema = mongoose.Schema({
     type:String,
     required:[true,"Please enter password"]
   },
-  resetPasswordToken:String,
-  resetPasswordTokenExpired:Date,
+  imagePath:{
+    type:String
+  },
 
   isAdmin:{
     type:Boolean,

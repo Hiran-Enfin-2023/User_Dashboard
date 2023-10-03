@@ -15,7 +15,7 @@ connectToDB();
 
 app.use("/api/auth/", authRouter);
 app.use("/api/meeting/", meetingRouter);
-
+app.use("/uploads", express.static("./uploads"))
 app.use((err, req, res, next) => {
   const errStatus = err.status || 500;
   const errMessage = err.message || "Something went wrong";

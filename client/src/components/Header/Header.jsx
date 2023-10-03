@@ -20,9 +20,8 @@ import { AppBar, Box, Toolbar } from '@mui/material';
 
 
 
-function Header({user}) {
+function Header({ user }) {
 
-    
     const navigate = useNavigate()
     const logoutHandler = () => {
         localStorage.removeItem("user_token");
@@ -58,23 +57,25 @@ function Header({user}) {
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
                         {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component="a"
-                            
-                            sx={{
-                                mr: 2,
-                                display: { xs: 'none', md: 'flex' },
-                                fontFamily: 'monospace',
-                                fontWeight: 700,
-                                letterSpacing: '.3rem',
-                                color: 'inherit',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            LOGO
-                        </Typography>
+                        <Link to="/">
+                            <Typography
+                                variant="h6"
+                                noWrap
+                                component="a"
+
+                                sx={{
+                                    mr: 2,
+                                    display: { xs: 'none', md: 'flex' },
+                                    fontFamily: 'monospace',
+                                    fontWeight: 700,
+                                    letterSpacing: '.3rem',
+                                    color: 'white',
+                                    textDecoration: 'none',
+                                }}
+                            >
+                                LOGO
+                            </Typography>
+                        </Link>
 
                         <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                             <IconButton
@@ -105,11 +106,11 @@ function Header({user}) {
                                     display: { xs: 'block', md: 'none' },
                                 }}
                             >
-                               
-                                    <MenuItem onClick={handleCloseNavMenu}>
-                                        <Typography textAlign="center">Meeting</Typography>
-                                    </MenuItem>
-                                
+
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography textAlign="center">Meeting</Typography>
+                                </MenuItem>
+
                             </Menu>
                         </Box>
                         {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
@@ -132,15 +133,15 @@ function Header({user}) {
                             LOGO
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                            
-                                <Button
-                                    
-                                    onClick={handleCloseNavMenu}
-                                    sx={{ my: 2, color: 'white', display: 'block' }}
-                                >
-                                    Meeting
-                                </Button>
-                           
+
+                            <Button
+
+                                onClick={handleCloseNavMenu}
+                                sx={{ my: 2, color: 'white', display: 'block' }}
+                            >
+                                Meeting
+                            </Button>
+
                         </Box>
 
                         <Box sx={{ flexGrow: 0 }}>
@@ -165,14 +166,16 @@ function Header({user}) {
                                 open={Boolean(anchorElUser)}
                                 onClose={handleCloseUserMenu}
                             >
-                                {/* {settings.map((setting) => ( */}
-                                    <MenuItem  onClick={handleCloseUserMenu}>
+
+                                <MenuItem onClick={handleCloseUserMenu}>
+                                    <Link to={`/profile/`}>
                                         <Typography textAlign="center">Profile</Typography>
-                                    </MenuItem>
-                                    <MenuItem  onClick={handleCloseUserMenu}>
-                                        <Typography onClick={logoutHandler} textAlign="center">Logout</Typography>
-                                    </MenuItem>
-                                {/* // ))} */}
+                                    </Link>
+                                </MenuItem>
+                                <MenuItem onClick={handleCloseUserMenu}>
+                                    <Typography onClick={logoutHandler} textAlign="center">Logout</Typography>
+                                </MenuItem>
+
                             </Menu>
                         </Box>
                     </Toolbar>

@@ -29,6 +29,7 @@ exports.register = asyncHandler(async (req, res, next) => {
           email,
           phoneNumber,
           password: passwordHashed,
+          imagePath: file,
         });
 
         const user = await newUser.save();
@@ -78,6 +79,22 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
 });
 
+exports.updateProfile = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const user = await userModel.findByIdAndUpdate(id, req.body, {
+    new: true,
+  });
+
+  if (!user) {
+    return next(throwError(404, "user not found"));
+  }
+
+  res.status(201).json({
+    success: true,
+    user,
+  });
+});
 exports.validateUser = asyncHandler(async (req, res) => {
   try {
     // console.log("controller", req.userId);
@@ -94,6 +111,40 @@ exports.validateUser = asyncHandler(async (req, res) => {
     res.status(401).json({
       message: error,
     });
+  }
+});
+
+exports.imageUpload = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const file = req.file.filename;
+  console.log(file);
+
+  if (!file) {
+    return next(throwError(404, "Please select an image"));
+  }
+
+  try {
+    const user = await userModel
+      .findByIdAndUpdate(
+        id,
+        { imagePath: file },
+        {
+          new: true,
+        }
+      )
+      .select("-password");
+
+    if (!user) {
+      return next(throwError(404, "No user to update"));
+    }
+
+    const finalData = await user.save();
+    res.status(201).json({
+      success: true,
+      finalData,
+    });
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -144,7 +195,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
       html: htmlContent(message),
     };
 
-   const sendMail =  transporter.sendMail(mailOptions, function (error, info) {
+    const sendMail = transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log(error);
       } else {
