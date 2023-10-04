@@ -29,7 +29,6 @@ exports.register = asyncHandler(async (req, res, next) => {
           email,
           phoneNumber,
           password: passwordHashed,
-          imagePath: file,
         });
 
         const user = await newUser.save();
@@ -67,8 +66,8 @@ exports.login = asyncHandler(async (req, res, next) => {
       const { password, confirmPassword, isAdmin, ...rest } = user._doc;
       res.status(200).json({
         success: true,
-        rest,
         isAdmin,
+        user:rest,
         access_token: token,
       });
     } else {

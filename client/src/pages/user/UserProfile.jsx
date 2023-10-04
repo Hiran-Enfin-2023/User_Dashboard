@@ -6,13 +6,24 @@ import Form from 'react-bootstrap/Form';
 import "./UserProfile.css"
 import axiosInstance from '../../axios';
 import { IoLockClosed, IoMail } from 'react-icons/io5';
+import { useDispatch, useSelector } from "react-redux"
+
+import { validateUser } from '../../services/validateUser';
+import { stillOnline } from '../../redux/auth/authSlice';
 function UserProfile() {
+
+    const dispatch = useDispatch()
+    const userData = useSelector((store) => store.authentication)
     const [image, setImage] = useState("");
     const [preview, setPreview] = useState("")
 
-
+    console.log("Line 16 profile", userData);
     const [data, setData] = useState([])
     const [id, setId] = useState("");
+
+
+
+
 
     const [inputValue, setInputValue] = useState({
         name: "",
@@ -29,22 +40,23 @@ function UserProfile() {
                 [name]: value
             }
         })
-    }
+    }    
 
 
     const activeUser = async () => {
-        const res = await axiosInstance.get("/auth/validate_user");
-        console.log(res.data);
-        setData(res.data)
-
-        setId(res.data._id)
+        validateUser().then((res) => {
+            setData(res)
+            setId(res._id)
+            dispatch(stillOnline(res))
+        })
+ 
 
     }
 
 
     const onImageChange = (e) => {
         setImage(e.target.files[0])
-        console.log(e.target.files[0]);
+        // console.log(e.target.files[0]);
     }
 
     const onSubmit = async (e) => {
@@ -56,7 +68,8 @@ function UserProfile() {
                 'content-type': 'multipart/form-data',
             },
         });
-        console.log(res.data);
+        // console.log(res.data.finalData);
+        dispatch(stillOnline(res.data.finalData))
 
     }
 
@@ -67,13 +80,14 @@ function UserProfile() {
             name, email, phoneNumber
         });
 
-        console.log(res.data);
+        // console.log(res.data);
     }
 
 
 
     useEffect(() => {
         activeUser();
+
 
         if (image) {
             setPreview(URL.createObjectURL(image))

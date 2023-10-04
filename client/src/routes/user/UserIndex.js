@@ -16,8 +16,8 @@ function UserIndex() {
       <Routes>
         <Route element={<LoggedUser />}>
           <Route path="/" element={<UserPage />} />
-          <Route path='/meeting/:slug' element={<MeetingPage />} />
-          <Route path="/profile" element={<UserProfile/>}/>
+          <Route path="/meeting/:slug" element={<MeetingPage />} />
+          <Route path="/profile" element={<UserProfile />} />
         </Route>
         <Route element={<NotLoggedUser />}>
           <Route path="/login" element={<Login />} />

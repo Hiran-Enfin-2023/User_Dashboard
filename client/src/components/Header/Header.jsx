@@ -16,12 +16,16 @@ import MenuItem from '@mui/material/MenuItem';
 // import AdbIcon from '@mui/icons-material/Adb';
 import { useState } from 'react';
 import { AppBar, Box, Toolbar } from '@mui/material';
+import { useSelector } from 'react-redux';
 
 
 
 
-function Header({ user }) {
+function Header() {
 
+    const user = useSelector((store) => store.authentication)
+
+    // console.log("line 28", user);
     const navigate = useNavigate()
     const logoutHandler = () => {
         localStorage.removeItem("user_token");
@@ -147,7 +151,11 @@ function Header({ user }) {
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Open settings">
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                    {
+
+                                        user.loading ? <Avatar/> :
+                                            <Avatar alt="image" src={`http://localhost:5000/uploads/${user.user?.imagePath}`} />
+                                    }
                                 </IconButton>
                             </Tooltip>
                             <Menu

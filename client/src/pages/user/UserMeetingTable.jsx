@@ -9,7 +9,7 @@ function UserMeetingTable() {
 
     const fetchInvitedMeeting = async () => {
         const res = await axiosInstance.get("/meeting/user/invited/");
-        console.log(res.data.userInvitedMeeting);
+        // console.log(res.data.userInvitedMeeting);
         setUserMeeting(res.data.userInvitedMeeting);
        
     }

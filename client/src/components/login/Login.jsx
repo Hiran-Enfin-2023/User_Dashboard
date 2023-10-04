@@ -7,12 +7,15 @@ import { useNavigate } from "react-router-dom";
 import Header from '../Header/Header';
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { useDispatch } from "react-redux"
 import * as yup from "yup"
 // import axios from 'axios';
 import axios from "../../axios"
+import { loginSuccess } from '../../redux/auth/authSlice';
 
 function Login() {
 
+  const dispatch = useDispatch();
   const schema = yup.object({
     email: yup.string(true).required(),
     password: yup.string(true).min(8, "Should contain atleast 8 characters").required()
@@ -47,24 +50,23 @@ function Login() {
 
     try {
       const res = await axios.post("/auth/login", { email, password });
-      console.log(res.data);
-      if (res.status === 200 && res.data.isAdmin === false) {
-        // console.log("user", res.data);
-        localStorage.setItem("user_token", res.data.access_token)
+      console.log(res.data.access_token);
+      if (res.data.success && res.data.isAdmin === false) {
+        dispatch(loginSuccess(res.data))
+        localStorage.setItem("user_token",res.data.access_token)
         navigate("/")
       }
-      // localStorage.setItem("token", res.data.access_token)
     } catch (error) {
-      alert(error.response.data.message)
-      console.log(error.response.data.message);
+      alert(error.response)
+      console.log(error.response);
     }
   };
 
 
   return (
-    <div style={{ height: "100vh"}}>
+    <div style={{ height: "100vh" }}>
       {/* <Header /> */}
-      <div style={{  backgroundColor: "#DCDCDC ", width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}  >
+      <div style={{ backgroundColor: "#DCDCDC ", width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}  >
 
         <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "500px", backgroundColor: "white", padding: "30px", borderRadius: "10px" }}>
           <h3>User Login {process.env.REACT_APP_HI_MESSAGE}</h3>
