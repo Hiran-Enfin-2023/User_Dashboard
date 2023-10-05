@@ -1,6 +1,6 @@
 module.exports = {
   apps : [{
-    name   : "app1",
+    name   : "Index api",
     instances: 'max',
     script : "./index.js",
     exec_mode: 'cluster'

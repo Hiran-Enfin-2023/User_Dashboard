@@ -3,6 +3,8 @@ const app = express();
 const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
+const { createAdapter } = require("@socket.io/redis-adapter");
+const { createClient } = require("redis");
 app.use(cors());
 
 const server = http.createServer(app);
@@ -13,6 +15,9 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+
+const pubClient = createClient({ url: "redis://localhost:6379" });
+const subClient = pubClient.duplicate();
 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
@@ -27,16 +32,23 @@ io.on("connection", (socket) => {
     console.log(data.room.slug);
   });
 
-  socket.on('is typing', (data)=>{
+  socket.on("is typing", (data) => {
     console.log(data);
-    socket.broadcast.emit('typing', data);
-   });
+    socket.broadcast.emit("typing", data);
+  });
 
   socket.on("disconnect", () => {
     console.log("User Disconnected", socket.id);
   });
 });
 
-server.listen(3001, () => {
-  console.log("SERVER RUNNING");
+Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+  io.adapter(createAdapter(pubClient, subClient));
+  server.listen(3001, () => {
+    console.log("Socket server is running");
+  });
+}).catch((err)=>{
+  console.log(err);
 });
+
+
