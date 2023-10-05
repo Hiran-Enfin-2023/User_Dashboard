@@ -4,21 +4,21 @@ const userSchema = mongoose.Schema({
 
   name:{
     type:String,
-    required:[true, "please enter your name"]
+    required:true,
   },
   email:{
     type:String,
-    required:[true,"Please enter email"],
+    required:true,
     unique:true,
   },
   phoneNumber:{
     type:Number,
-    required:[true,"Please enter your name"],
+    required:true,
     unique:true
   },
   password:{
     type:String,
-    required:[true,"Please enter password"]
+    required:true
   },
   imagePath:{
     type:String

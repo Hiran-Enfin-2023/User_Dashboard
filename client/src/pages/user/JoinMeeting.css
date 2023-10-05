@@ -1,0 +1,95 @@
+.video__main {
+    height: 100vh;
+    background-color: rgb(255, 255, 255);
+    width: 100%;
+    padding: 8%;
+}
+
+.video-wrapper {
+    /* margin: 8%; */
+    height: 500px;
+    background-color: rgb(227, 227, 227);
+    /* width: 100%; */
+    flex-wrap: wrap;
+}
+
+.video_container {
+    display: flex;
+    /* margin: 8%; */
+    height: 400px;
+    /* background-color: rgb(219, 38, 38); */
+    /* width: 100%; */
+    flex-wrap: wrap;
+}
+
+.video-div {
+    height: 400px;
+    flex: 4;
+    /* background-color: rgb(235, 14, 14); */
+    border-radius: 10px;
+    position: relative;
+}
+
+.join-div {
+    height: 400px;
+    background-color: rgb(255, 255, 255);
+    flex: 2;
+}
+
+.audio-video-btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    background-color: transparent;
+    height: 15%;
+    position: absolute;
+    bottom: 10px;
+}
+
+.video-view {
+
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+    border-radius: 10px;
+
+}
+
+.video-not-view {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    background-color: black;
+    color: white;
+}
+
+.audio-video-btn .audio-btn {
+    background-color: transparent;
+    border: 1px solid rgb(255, 255, 255);
+    width: 50px;
+    color: rgb(248, 6, 6);
+    border-radius: 50%;
+    font-size: x-large;
+}
+
+.audio-video-btn .video-btn {
+    background-color: transparent;
+    border: 1px solid rgb(255, 255, 255);
+    width: 50px;
+    color: rgb(248, 6, 6);
+    border-radius: 50%;
+    font-size: x-large;
+    margin-left: 20px;
+}
+
+.setting-audio-video {
+    display: flex;
+    margin-top: 20px;
+}
+.select-audio{
+    width: 150px;
+    display: flex;
+    border: 1px solid black;
+    border-radius: 20px;
+    margin-left: 10px;
+}

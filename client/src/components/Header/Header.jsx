@@ -32,9 +32,6 @@ function Header() {
         navigate("/login")
     }
 
-    const userToken = localStorage.getItem('user_token');
-
-    const token = localStorage.getItem("access_token")
 
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);

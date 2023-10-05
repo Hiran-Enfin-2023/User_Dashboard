@@ -40,7 +40,7 @@ function UserProfile() {
                 [name]: value
             }
         })
-    }    
+    }
 
 
     const activeUser = async () => {
@@ -49,7 +49,7 @@ function UserProfile() {
             setId(res._id)
             dispatch(stillOnline(res))
         })
- 
+
 
     }
 
@@ -61,21 +61,31 @@ function UserProfile() {
 
     const onSubmit = async (e) => {
         e.preventDefault()
+
         const formData = new FormData();
         formData.append("user_image", image);
-        const res = await axiosInstance.patch(`/auth/image_upload/${id}`, formData, {
-            headers: {
-                'content-type': 'multipart/form-data',
-            },
-        });
-        // console.log(res.data.finalData);
-        dispatch(stillOnline(res.data.finalData))
+        try {
+            const res = await axiosInstance.patch(`/auth/image_upload/${id}`, formData, {
+                headers: {
+                    'content-type': 'multipart/form-data',
+                },
+            });
+            // console.log(res.data.finalData);
+            dispatch(stillOnline(res.data.finalData))
+        } catch (error) {
+            console.log(error);
+        }
+
 
     }
 
 
     const updateProfile = async () => {
         const { name, email, phoneNumber } = inputValue;
+
+        if (!name || !email || !phoneNumber) {
+            alert("Please fill all the fields")
+        }
         const res = await axiosInstance.put(`/auth/update/profile/${id}`, {
             name, email, phoneNumber
         });
@@ -87,7 +97,6 @@ function UserProfile() {
 
     useEffect(() => {
         activeUser();
-
 
         if (image) {
             setPreview(URL.createObjectURL(image))
@@ -124,16 +133,19 @@ function UserProfile() {
                     </div>
                 </div>
                 <div className="email-password__delete-acc mt-3">
-                    <div className="email__password" style={{ height: "350px", width: "450px", border: "1px solid #DCDCDC", margin: "35px 50px", borderRadius: "10px" }}>
+                    <div className="email__password" style={{ height: "450px", width: "450px", border: "1px solid #DCDCDC", margin: "35px 50px", borderRadius: "10px" }}>
 
                         <div style={{ borderBottom: "1px solid #DCDCDC", padding: "15px" }}>
                             <h6>Updata Profile</h6>
                         </div>
                         <div style={{ padding: "20px 20px" }} className="user-form ">
                             <Form>
+                                <Form.Label>Name</Form.Label>
                                 <Form.Control onChange={setValue} name='name' value={inputValue.name} placeholder={data.name} />
-                                <Form.Control onChange={setValue} name='email' value={inputValue.email} placeholder={data.email} className='mt-3' />
-                                <Form.Control onChange={setValue} name='phoneNumber' value={inputValue.phoneNumber} placeholder={data.phoneNumber} className='mt-3' />
+                                <Form.Label className='mt-3'>Email</Form.Label>
+                                <Form.Control onChange={setValue} name='email' value={inputValue.email} placeholder={data.email} className='mt-1' />
+                                <Form.Label className='mt-3'>Phone Number</Form.Label>
+                                <Form.Control onChange={setValue} name='phoneNumber' value={inputValue.phoneNumber} placeholder={data.phoneNumber} className='mt-1' />
                             </Form>
 
                             <div className="email-password-btn mt-5">
