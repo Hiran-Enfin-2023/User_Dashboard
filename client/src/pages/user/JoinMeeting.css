@@ -8,7 +8,7 @@
 .video-wrapper {
     /* margin: 8%; */
     height: 500px;
-    background-color: rgb(227, 227, 227);
+    background-color: rgb(255, 255, 255);
     /* width: 100%; */
     flex-wrap: wrap;
 }
@@ -44,8 +44,20 @@
     height: 15%;
     position: absolute;
     bottom: 10px;
+    
 }
-
+.audio-meter{
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
+    height: 10px;
+}
+.join__user__name{
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: white;
+}
 .video-view {
 
     height: 100%;
@@ -67,16 +79,17 @@
     background-color: transparent;
     border: 1px solid rgb(255, 255, 255);
     width: 50px;
-    color: rgb(248, 6, 6);
+    color: rgb(247, 5, 5);
     border-radius: 50%;
     font-size: x-large;
 }
+
 
 .audio-video-btn .video-btn {
     background-color: transparent;
     border: 1px solid rgb(255, 255, 255);
     width: 50px;
-    color: rgb(248, 6, 6);
+    color: rgb(252, 2, 2);
     border-radius: 50%;
     font-size: x-large;
     margin-left: 20px;
@@ -86,10 +99,21 @@
     display: flex;
     margin-top: 20px;
 }
-.select-audio{
-    width: 150px;
+
+.select-audio,
+.select-speaker,
+.select-video {
+    width: 250px;
+    height: 40px;
     display: flex;
-    border: 1px solid black;
+    border: 1px solid rgb(180, 180, 180);
     border-radius: 20px;
     margin-left: 10px;
+    align-items: center;
+}
+
+#selector {
+    width: 200px;
+    border: none;
+    color: red;
 }

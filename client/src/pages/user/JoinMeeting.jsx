@@ -5,19 +5,45 @@ import "./JoinMeeting.css"
 import { AiFillAudio, AiOutlineAudioMuted } from "react-icons/ai"
 import { FaVideo, FaVideoSlash } from "react-icons/fa"
 import { BsFillMicMuteFill } from "react-icons/bs"
-
+import { HiMiniSpeakerWave } from "react-icons/hi2"
+import { LuScreenShare } from "react-icons/lu"
 import FormControl from '@mui/material/FormControl';
+import { BiVideo } from "react-icons/bi"
+import Select from "react-select"
+import { useSelector } from 'react-redux'
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 function JoinMeeting() {
-    const videoRef = useRef(null)
-    const [join, setJoin] = useState(false)
-    const [stream, setStream] = useState()
-    const [audioEnable, setAudioEnable] = useState(true)
-    const [videoEnable, setVideoEnable] = useState(true);
-    const [audioInput, setAudioInput] = useState('')
 
-    const audioHandleChange = (e) => {
-        setAudioInput(e.target.value)
+
+    const user = useSelector(store => store.authentication.user)
+    console.log(user);
+    const videoRef = useRef(null)
+    const volumeMeterRef = useRef(null)
+    const [join, setJoin] = useState(false)
+    const [stream, setStream] = useState() //for setting the stream
+    const [audioEnable, setAudioEnable] = useState(true) //to enable and disable audio
+    const [videoEnable, setVideoEnable] = useState(true); //to enable and disable video
+
+    const [audioOut, setAudioOut] = useState([])
+    const [audioIn, setAudioIn] = useState([])
+    const [video, setVideo] = useState([])
+
+    const [selectAudioInput, setSelectAudioInput] = useState([]) // to select audio input 
+    const [selectAudioOut, setSelectAudioOut] = useState([]) // to select audio output 
+    const [selectVideoInput, setSelectVideoInput] = useState([]) //for select video ;
+
+
+    const audioInputHandleChange = (e) => {
+        setAudioIn([e])
+    }
+
+    const audioOutputHandleChange = (e) => {
+        setAudioOut([e]);
+    }
+
+    const videoHandleChange = (e) => {
+        setVideo([e]);
     }
 
 
@@ -30,6 +56,48 @@ function JoinMeeting() {
         })
     }
 
+    function handleError(error) {
+        console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+    }
+
+    const gotDevices = (info) => {
+
+        info?.map((device) => {
+            if (device.kind === "audioinput") {
+                const options = {
+                    value: device.deviceId,
+                    label: device.label
+                }
+                setSelectAudioInput((items) => [...items, options])
+            }
+            if (device.kind === "audiooutput") {
+                const options = {
+                    value: device.deviceId,
+                    label: device.label
+                }
+                setSelectAudioOut((items) => [...items, options])
+            }
+
+            if (device.kind === "videoinput") {
+                const options = {
+                    value: device.deviceId,
+                    label: device.label
+                }
+                setSelectVideoInput((items) => [...items, options])
+            }
+        })
+    }
+
+    const getDeviceList = () => {
+        navigator.mediaDevices.enumerateDevices().then().then(gotDevices).catch(handleError)
+
+    }
+
+
+    const streamVolume = (stream)=>{
+        window.stream = stream;
+        
+    }
 
     const toggelVideo = () => {
         // console.log(stream.getTracks());
@@ -50,9 +118,23 @@ function JoinMeeting() {
             }
         })
     }
+
+
+    const presentScreen = () => {
+        const options = { audio: false, video: true, cursor: true };
+
+        navigator.mediaDevices.getDisplayMedia(options).then().catch(handleError)
+    }
+
+
     useEffect(() => {
-        getVideo()
+        getVideo();
+        getDeviceList();
     }, []);
+
+
+
+
 
 
     return (
@@ -69,9 +151,16 @@ function JoinMeeting() {
 
                                     <video className='video-view' ref={videoRef} autoPlay src="" />
 
+                                    <div className="join__user__name">
+                                        <h6>{user?.name}</h6>
+                                    </div>
+
+                                    <div className="audio-meter w-25">
+                                          <ProgressBar style={{height:"5px"}} variant="success" now={80} />
+                                    </div>
 
                                     <div className="audio-video-btn">
-                                        <Button className='audio-btn' onClick={toggleAudio} >
+                                        <Button className='audio-btn audio-clx-btn' onClick={toggleAudio} >
                                             {
                                                 audioEnable ?
                                                     <AiFillAudio className='audio-btn-icon' /> :
@@ -81,7 +170,7 @@ function JoinMeeting() {
 
                                         </Button>
 
-                                        <Button className='video-btn' onClick={toggelVideo}  >
+                                        <Button className='video-btn video-clx-btn' onClick={toggelVideo}  >
                                             {
                                                 videoEnable ?
                                                     <FaVideo className='video-btn-icon' /> : <FaVideoSlash className='video-btn-icon' />
@@ -95,9 +184,13 @@ function JoinMeeting() {
                                         <h2 style={{ color: "black" }}>Ready to Join?</h2>
 
                                     </div>
-                                    <div className="join-btn-div">
-                                        <Button style={{ backgroundColor: "#6200ee", color: "white", padding: "15px", borderRadius: "25px" }} onClick={() => setJoin(!join)}>
+                                    <div className="join-btn-div d-flex">
+                                        <Button style={{ margin: "15px", backgroundColor: "#6200ee", color: "white", padding: "15px", borderRadius: "25px" }} onClick={() => setJoin(!join)}>
                                             Join Now
+                                        </Button>
+                                        <Button onClick={presentScreen} style={{ margin: "15px", border: ".5px solid lightblue", borderRadius: "25px", display: "flex", justifyContent: "space-between" }}>
+                                            <LuScreenShare className='mr-2' />
+                                            Present
                                         </Button>
                                     </div>
 
@@ -110,53 +203,28 @@ function JoinMeeting() {
                             <div className="setting-audio-video">
 
                                 <div className="select-audio">
-                                    <div className="audio-select ml-4">
+                                    <div className="audio-select ml-2">
                                         <AiFillAudio className='audio-btn-icon' />
                                     </div>
-                                    <FormControl className='ml-4' fullWidth>
-                                        <NativeSelect
-                                            defaultValue={"Default"}
-                                            style={{textDecoration: 'none'}}
-                                            inputProps={{
-                                                name: 'mic',
-                                                id: 'uncontrolled-native',
-                                            }}
-                                        >
-                                            <option value={10}>Default</option>
-                                            <option value={20}>Twenty</option>
-                                            <option value={30}>Thirty</option>
-                                        </NativeSelect>
-                                    </FormControl>
+                                    <div className='ml-4'>
+                                        <Select options={selectAudioInput} value={audioIn} onChange={audioInputHandleChange} id='selector' />
+                                    </div>
                                 </div>
                                 <div className="select-speaker">
-                                    <FormControl fullWidth>
-                                        <NativeSelect
-                                            defaultValue={"Default"}
-                                            inputProps={{
-                                                name: 'mic',
-                                                id: 'uncontrolled-native',
-                                            }}
-                                        >
-                                            <option value={10}>Default</option>
-                                            <option value={20}>Twenty</option>
-                                            <option value={30}>Thirty</option>
-                                        </NativeSelect>
-                                    </FormControl>
+                                    <div className="speaker-select ml-2">
+                                        <HiMiniSpeakerWave />
+                                    </div>
+                                    <div className='ml-4'>
+                                        <Select options={selectAudioOut} value={audioOut} onChange={audioOutputHandleChange} id='selector' />
+                                    </div>
                                 </div>
                                 <div className="select-video">
-                                    <FormControl fullWidth>
-                                        <NativeSelect
-                                            defaultValue={"Default"}
-                                            inputProps={{
-                                                name: 'mic',
-                                                id: 'uncontrolled-native',
-                                            }}
-                                        >
-                                            <option value={10}>Default</option>
-                                            <option value={20}>Twenty</option>
-                                            <option value={30}>Thirty</option>
-                                        </NativeSelect>
-                                    </FormControl>
+                                    <div className="video-select ml-2">
+                                        <BiVideo />
+                                    </div>
+                                    <div className='ml-4'>
+                                        <Select options={selectVideoInput} value={video} onChange={videoHandleChange} id='selector' />
+                                    </div>
                                 </div>
                             </div>
                         </div>
