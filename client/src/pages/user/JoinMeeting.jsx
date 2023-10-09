@@ -17,9 +17,9 @@ function JoinMeeting() {
 
 
     const user = useSelector(store => store.authentication.user)
-    console.log(user);
     const videoRef = useRef(null)
-    const volumeMeterRef = useRef(null)
+    const audioRef = useRef(null)
+    const volumeMeterEl = useRef(null)
     const [join, setJoin] = useState(false)
     const [stream, setStream] = useState() //for setting the stream
     const [audioEnable, setAudioEnable] = useState(true) //to enable and disable audio
@@ -28,10 +28,15 @@ function JoinMeeting() {
     const [audioOut, setAudioOut] = useState([])
     const [audioIn, setAudioIn] = useState([])
     const [video, setVideo] = useState([])
-
     const [selectAudioInput, setSelectAudioInput] = useState([]) // to select audio input 
     const [selectAudioOut, setSelectAudioOut] = useState([]) // to select audio output 
     const [selectVideoInput, setSelectVideoInput] = useState([]) //for select video ;
+
+    const [audioStream, setAudioStream] = useState(null);
+    const [audioContext, setAudioContext] = useState(null);
+    const [analyser, setAnalyser] = useState(null);
+    const [volumeLevel, setVolumeLevel] = useState(0);
+
 
 
     const audioInputHandleChange = (e) => {
@@ -47,14 +52,6 @@ function JoinMeeting() {
     }
 
 
-    const getVideo = () => {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-            setStream(stream)
-            videoRef.current.srcObject = stream
-        }).catch((err) => {
-            console.log(err);
-        })
-    }
 
     function handleError(error) {
         console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
@@ -94,11 +91,60 @@ function JoinMeeting() {
     }
 
 
-    const streamVolume = (stream)=>{
+
+
+
+
+    // const getVideo = () => {
+    //     console.log(audioIn,video);
+    //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+    //         setStream(stream)
+    //         videoRef.current.srcObject = stream;
+
+    //     })
+
+    // }
+
+    const gotStreams = async (stream) => {
         window.stream = stream;
-        
+        videoRef.current.srcObject = window.stream
+
+        const context = new AudioContext();
+        const analyserNode = context.createAnalyser();
+        const sourceNode = context.createMediaStreamSource(stream);
+
+        analyserNode.fftSize = 256; // Adjust this for the desired accuracy
+        sourceNode.connect(analyserNode);
+        analyserNode.connect(context.destination);
+
+        setAudioStream(stream);
+        setAudioContext(context);
+        setAnalyser(analyserNode);
     }
 
+
+    const updateVolumeLevel = () => {
+        if (analyser) {
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteFrequencyData(dataArray);
+
+            // Calculate the average volume level
+            const sum = dataArray.reduce((acc, value) => acc + value, 0);
+            const avgVolume = sum / bufferLength;
+            
+            setVolumeLevel(avgVolume);
+            // console.log(avgVolume);
+        }
+    };
+
+
+    const getVideo = () => {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(gotStreams)
+    }
+
+
+    //@video ON & OFF
     const toggelVideo = () => {
         // console.log(stream.getTracks());
         stream.getTracks().forEach((track) => {
@@ -110,28 +156,41 @@ function JoinMeeting() {
         })
     }
 
+    //@ audio btn ON & OFF
     const toggleAudio = () => {
         stream.getTracks().forEach((track) => {
             if (track.kind === "audio") {
-                track.enable = !track.enabled;
+                track.enabled = !track.enabled;
                 setAudioEnable(prev => !prev)
             }
         })
     }
 
 
+    //@desc presenting the screen
     const presentScreen = () => {
         const options = { audio: false, video: true, cursor: true };
 
         navigator.mediaDevices.getDisplayMedia(options).then().catch(handleError)
     }
 
-
-    useEffect(() => {
+    useEffect(()=>{
         getVideo();
         getDeviceList();
-    }, []);
+    },[])
 
+    useEffect(() => {
+       
+        if (audioContext && analyser) {
+            const intervalId = setInterval(() => {
+                updateVolumeLevel();
+            }, 10); // Update volume level every 100ms (you can adjust this interval as needed)
+        }
+        
+
+    }, [audioContext, analyser]);
+
+    
 
 
 
@@ -147,6 +206,7 @@ function JoinMeeting() {
 
                             <div className="video_container">
 
+
                                 <div className="video-div">
 
                                     <video className='video-view' ref={videoRef} autoPlay src="" />
@@ -156,7 +216,10 @@ function JoinMeeting() {
                                     </div>
 
                                     <div className="audio-meter w-25">
-                                          <ProgressBar style={{height:"5px"}} variant="success" now={80} />
+
+                                        <ProgressBar style={{ height: "5px" }} ref={volumeMeterEl} now={volumeLevel} variant="success" />
+
+
                                     </div>
 
                                     <div className="audio-video-btn">
