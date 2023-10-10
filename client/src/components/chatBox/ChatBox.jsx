@@ -8,7 +8,7 @@ import "./ChatBox.css"
 function ChatBox({ socket, room, user }) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
-  console.log(user);
+  // console.log(user);
   const sendMessage = async () => {
     if (currentMessage !== "") {
       const messageData = {
@@ -22,7 +22,7 @@ function ChatBox({ socket, room, user }) {
       };
 
       await socket.emit("send_message", messageData);
-      // setMessageList((list) => [...list, messageData]);
+      setMessageList((list) => [...list, messageData]);
       setCurrentMessage("");
     }
   };
