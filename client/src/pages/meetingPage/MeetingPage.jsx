@@ -7,7 +7,7 @@ import axiosInstance from '../../axios';
 function MeetingPage() {
 
 
-    const socket = io.connect("http://localhost:3001")
+    const socket = io.connect("http://localhost:5001")
 
     const slug = useParams();
 
@@ -18,7 +18,7 @@ function MeetingPage() {
     }
 
     const joinRoom = () => {
-        console.log(slug.slug);
+        // console.log(slug.slug);
         socket.emit("join_room", slug.slug)
     }
 
@@ -26,7 +26,7 @@ function MeetingPage() {
     useEffect(() => {
         currentUser()
         joinRoom()
-    }, [])
+    }, [''])
 
     return (
         <div style={{ height: "100vh", width: "100vw" }}>

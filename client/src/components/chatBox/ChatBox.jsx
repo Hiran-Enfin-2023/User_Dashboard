@@ -8,7 +8,6 @@ import "./ChatBox.css"
 function ChatBox({ socket, room, user }) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
-  const [typingUser, setTypingUser] = useState()
   console.log(user);
   const sendMessage = async () => {
     if (currentMessage !== "") {
@@ -39,9 +38,7 @@ function ChatBox({ socket, room, user }) {
     socket.on("receive_message", (data) => {
       setMessageList((list) => [...list, data]);
     });
-    socket.on('typing', (data) => {
-      setTypingUser(data)
-    })
+    
     // return()=>{
     //   socket.off("send_message")
     // }

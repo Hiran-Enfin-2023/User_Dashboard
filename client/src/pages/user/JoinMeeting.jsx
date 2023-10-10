@@ -108,7 +108,7 @@ function JoinMeeting() {
     const gotStreams = async (stream) => {
         window.stream = stream;
         videoRef.current.srcObject = window.stream
-
+        setStream(stream)
         const context = new AudioContext();
         const analyserNode = context.createAnalyser();
         const sourceNode = context.createMediaStreamSource(stream);
@@ -132,7 +132,7 @@ function JoinMeeting() {
             // Calculate the average volume level
             const sum = dataArray.reduce((acc, value) => acc + value, 0);
             const avgVolume = sum / bufferLength;
-            
+
             setVolumeLevel(avgVolume);
             // console.log(avgVolume);
         }
@@ -174,23 +174,23 @@ function JoinMeeting() {
         navigator.mediaDevices.getDisplayMedia(options).then().catch(handleError)
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         getVideo();
         getDeviceList();
-    },[])
+    }, [])
 
     useEffect(() => {
-       
+
         if (audioContext && analyser) {
             const intervalId = setInterval(() => {
                 updateVolumeLevel();
             }, 10); // Update volume level every 100ms (you can adjust this interval as needed)
         }
-        
+
 
     }, [audioContext, analyser]);
 
-    
+
 
 
 

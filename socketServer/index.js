@@ -12,8 +12,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
+    methods: ["GET", "POST"]
+  }
 });
 
 const pubClient = createClient({ url: "redis://localhost:6379" });
@@ -44,8 +44,8 @@ io.on("connection", (socket) => {
 
 Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
   io.adapter(createAdapter(pubClient, subClient));
-  server.listen(3001, () => {
-    console.log("Socket server is running");
+  server.listen(5001, () => {
+    console.log("Socket server is running at 5001");
   });
 }).catch((err)=>{
   console.log(err);
