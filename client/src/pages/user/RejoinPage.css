@@ -1,0 +1,9 @@
+.timer{
+    height: 100%;
+    background-color: red;
+}
+
+.counter{
+    height: 100px;
+    background-color: blue;
+}

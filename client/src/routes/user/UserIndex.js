@@ -10,6 +10,7 @@ import ResetPassword from "../../components/resetPassword/ResetPassword";
 // import MeetingPage from "../../pages/meetingPage/MeetingPage";
 import UserProfile from "../../pages/user/UserProfile";
 import JoinMeeting from "../../pages/user/JoinMeeting";
+import RejoinPage from "../../pages/user/RejoinPage";
 
 function UserIndex() {
   return (
@@ -18,6 +19,7 @@ function UserIndex() {
         <Route element={<LoggedUser />}>
           <Route path="/" element={<UserPage />} />
           <Route path="/meeting/:slug" element={<JoinMeeting />} />
+          <Route path="/meeting/rejoin/:slug" element={<RejoinPage />} />
           <Route path="/profile" element={<UserProfile />} />
         </Route>
         <Route element={<NotLoggedUser />}>

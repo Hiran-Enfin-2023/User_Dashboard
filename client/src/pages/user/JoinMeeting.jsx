@@ -12,6 +12,7 @@ import { BiVideo } from "react-icons/bi"
 import Select from "react-select"
 import { useSelector } from 'react-redux'
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import Swal from 'sweetalert2'
 
 function JoinMeeting() {
 
@@ -91,10 +92,6 @@ function JoinMeeting() {
     }
 
 
-
-
-
-
     // const getVideo = () => {
     //     console.log(audioIn,video);
     //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
@@ -134,7 +131,6 @@ function JoinMeeting() {
             const avgVolume = sum / bufferLength;
 
             setVolumeLevel(avgVolume);
-            // console.log(avgVolume);
         }
     };
 
@@ -146,7 +142,6 @@ function JoinMeeting() {
 
     //@video ON & OFF
     const toggelVideo = () => {
-        // console.log(stream.getTracks());
         stream.getTracks().forEach((track) => {
             if (track.kind === "video") {
                 track.enabled = !track.enabled;
@@ -174,6 +169,20 @@ function JoinMeeting() {
         navigator.mediaDevices.getDisplayMedia(options).then().catch(handleError)
     }
 
+
+    const joinMeeting = ()=>{
+        if(audioIn && audioOut && video === 0){
+            Swal.fire({
+                
+                text: 'Please select device to continue',
+                icon: 'error',
+                confirmButtonText: 'Ok'
+              })
+        }else{
+            setJoin(!join)
+        }
+    }
+
     useEffect(() => {
         getVideo();
         getDeviceList();
@@ -184,16 +193,11 @@ function JoinMeeting() {
         if (audioContext && analyser) {
             const intervalId = setInterval(() => {
                 updateVolumeLevel();
-            }, 10); // Update volume level every 100ms (you can adjust this interval as needed)
+            }, 10); 
         }
 
 
     }, [audioContext, analyser]);
-
-
-
-
-
 
 
     return (
@@ -248,7 +252,7 @@ function JoinMeeting() {
 
                                     </div>
                                     <div className="join-btn-div d-flex">
-                                        <Button style={{ margin: "15px", backgroundColor: "#6200ee", color: "white", padding: "15px", borderRadius: "25px" }} onClick={() => setJoin(!join)}>
+                                        <Button onClick={joinMeeting} style={{ margin: "15px", backgroundColor: "#6200ee", color: "white", padding: "15px", borderRadius: "25px" }} >
                                             Join Now
                                         </Button>
                                         <Button onClick={presentScreen} style={{ margin: "15px", border: ".5px solid lightblue", borderRadius: "25px", display: "flex", justifyContent: "space-between" }}>

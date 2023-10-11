@@ -1,19 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
-// import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-// import Button from 'react-bootstrap/esm/Button';
-
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
-// import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-// import AdbIcon from '@mui/icons-material/Adb';
 import { useState } from 'react';
 import { AppBar, Box, Toolbar } from '@mui/material';
 import { useSelector } from 'react-redux';
@@ -25,7 +18,6 @@ function Header() {
 
     const user = useSelector((store) => store.authentication)
 
-    // console.log("line 28", user);
     const navigate = useNavigate()
     const logoutHandler = () => {
         localStorage.removeItem("user_token");
@@ -57,7 +49,6 @@ function Header() {
             <AppBar position="static">
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
-                        {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
                         <Link to="/">
                             <Typography
                                 variant="h6"
@@ -74,7 +65,7 @@ function Header() {
                                     textDecoration: 'none',
                                 }}
                             >
-                                LOGO
+                                Super Meet
                             </Typography>
                         </Link>
 
@@ -87,7 +78,6 @@ function Header() {
                                 onClick={handleOpenNavMenu}
                                 color="inherit"
                             >
-                                {/* <MenuIcon /> */}
                             </IconButton>
                             <Menu
                                 id="menu-appbar"
@@ -131,7 +121,7 @@ function Header() {
                                 textDecoration: 'none',
                             }}
                         >
-                            LOGO
+                            Super Meet
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 

@@ -28,7 +28,7 @@
     height: 80%;
     width: auto;
     border: 1px solid #263238;
-    background: #cfcfcf;
+    background: #ffffff;
     position: relative;
 }
 
@@ -50,7 +50,7 @@
 }
 
 
-.chat-window .chat-body .message  #time{
+.chat-window .chat-body .message #time {
     font-size: x-small;
     color: rgb(25, 23, 23);
     justify-content: flex-end;
@@ -77,28 +77,37 @@
     border-radius: 0px 15px 15px 15px;
 }
 
-.time{
+.time {
     display: flex;
     justify-content: flex-end;
     margin-right: 5px;
 }
-.chat-window .chat-body .message .message-content .time #time{
+
+.chat-window .chat-body .message .message-content .time #time {
     color: rgb(0, 0, 0);
 }
+
 #you {
     justify-content: flex-start;
     border-radius: 10px;
+
 }
 
 #you .message-content {
     justify-content: flex-start;
     padding-left: 10px;
+    background-color: black;
+    color: white;
 }
 
 #you .message-meta {
     justify-content: space-between;
     margin-left: 5px;
     /* background-color: red;  */
+}
+
+#you .message-content .time #time{
+    color: white;
 }
 
 #other {
@@ -108,7 +117,7 @@
 
 #other .message-content {
     justify-content: flex-start;
-    /* background-color: #0c4df1; */
+    background-color: #0c4df1;
     border-radius: 15px 0px 15px 15px;
     padding-left: 10px;
 }

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import ChatBox from '../../components/chatBox/ChatBox'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import io from "socket.io-client";
 import axiosInstance from '../../axios';
 import { Button } from '@mui/material';
 import "./MeetingPage.css"
-import { BsFillMicFill, BsHandbag, BsFillPeopleFill,BsFillChatLeftTextFill } from "react-icons/bs"
+import { BsFillMicFill, BsHandbag, BsFillPeopleFill, BsFillChatLeftTextFill } from "react-icons/bs"
 import { BiSolidVideo } from "react-icons/bi"
 import { FaHandPaper } from "react-icons/fa"
 import { ImPhoneHangUp } from "react-icons/im"
@@ -13,11 +13,12 @@ const socket = io.connect("http://localhost:5000", { transports: ["websocket"] }
 function MeetingPage() {
 
 
-
+    const date = new Date()
     const slug = useParams();
-
+    const navigate = useNavigate()
     const [user, setUser] = useState();
-
+    const [hour, setHour] = useState();
+    const [minute, setMinute] = useState();
     const [showParticipants, setShowParticipants] = useState();
     const [showChat, setShowChat] = useState(false);
     const currentUser = async () => {
@@ -25,15 +26,29 @@ function MeetingPage() {
         setUser(res.data.name)
     }
 
+    const getCurrentTime = () => {
+        if (date > 12) {
+            setHour(date.getHours() - 12)
+        } else {
+            setHour(date.getHours())
+        }
+
+        setMinute(date.getMinutes())
+    }
+
     const joinRoom = () => {
-        // console.log(slug.slug);
         socket.emit("join_room", slug.slug)
+    }
+
+    const endCall = () => {
+        navigate(`/meeting/rejoin/${slug.slug}`)
     }
 
 
     useEffect(() => {
         currentUser()
         joinRoom()
+        getCurrentTime()
     }, [])
 
     return (
@@ -44,22 +59,8 @@ function MeetingPage() {
 
                         <div className="video__call__container">
                             <div className="user1">
-                                
-                            </div>
-                            <div className="user1">
-                            
-                            </div>
-                            {/* <div className="user1">
-                                R
-                            </div>
-                            <div className="user1">
-                                R
-                            </div>
-                            <div className="user1">
-                                R
-                            </div> */}
 
-
+                            </div>
 
                         </div>
                     </div>
@@ -89,20 +90,30 @@ function MeetingPage() {
                 {/* footer  */}
 
 
-                <div style={{ height: "15%", display:"flex" }} className="footer">
-                    <div style={{gap:"10px"}} className="call-controls">
-                        <Button style={{backgroundColor:"#696969", color:"white", borderRadius:"50%", height:"60px"}} className="control-btn">{<BsFillMicFill style={{height:"20px", width:"20px"}} />}</Button>
-                        <Button style={{backgroundColor:"#696969", color:"white", borderRadius:"50%", height:"60px"}} className="control-btn">{<BiSolidVideo style={{height:"20px", width:"20px"}} />}</Button>
-                        <Button style={{backgroundColor:"#696969", color:"yellow", borderRadius:"50%", height:"60px"}} className="control-btn">{<FaHandPaper style={{height:"20px", width:"20px"}} />}</Button>
-                        <Button style={{backgroundColor:"#696969", color:"red", borderRadius:"50%", height:"60px"}} className="control-btn">{<ImPhoneHangUp style={{height:"30px", width:"40px"}} />}</Button>
+                <div style={{ height: "15%", display: "flex" }} className="footer">
+                    <div style={{ gap: "10px" }} className="call-controls">
+                        <div className="username">
+                            <h5 style={{ color: "black" }}>{user}</h5>
+                        </div>
+                        <div className="slug-time">
+                            | <h5>{hour} : {minute}</h5> |
+                            <h5>{slug.slug}</h5>
+                        </div>
+                        <div className="control-bts">
+
+                        <Button style={{ backgroundColor: "black", color: "white", borderRadius: "50%", height: "60px" }} className="control-btn">{<BsFillMicFill style={{ height: "20px", width: "20px" }} />}</Button>
+                        <Button style={{ backgroundColor: "black", color: "white", borderRadius: "50%", height: "60px" }} className="control-btn">{<BiSolidVideo style={{ height: "20px", width: "20px" }} />}</Button>
+                        <Button style={{ backgroundColor: "black", color: "yellow", borderRadius: "50%", height: "60px" }} className="control-btn">{<FaHandPaper style={{ height: "20px", width: "20px" }} />}</Button>
+                        <Button onClick={endCall} style={{ backgroundColor: "black", color: "red", borderRadius: "50%", height: "60px" }} className="control-btn">{<ImPhoneHangUp style={{ height: "30px", width: "40px" }} />}</Button>
+                        </div>
 
                     </div>
                     <div className="controls">
-                        <button style={{backgroundColor:"#696969", color:"red", borderRadius:"50%", border:"none", height:"40px", width:"40px"}} className='chat__btn' onClick={() => { setShowChat(!showChat) }}>
+                        <button style={{ backgroundColor: "black", color: "white", borderRadius: "50%", border: "none", height: "40px", width: "40px" }} className='chat__btn' onClick={() => { setShowChat(!showChat) }}>
                             <BsFillChatLeftTextFill />
                         </button>
-                        <button style={{backgroundColor:"#696969", color:"red", borderRadius:"50%", border:"none", height:"40px", width:"40px"}} className='participants__btn' onClick={() => { setShowParticipants(!showParticipants) }}>
-                            <BsFillPeopleFill/>
+                        <button style={{ backgroundColor: "black", color: "white", borderRadius: "50%", border: "none", height: "40px", width: "40px" }} className='participants__btn' onClick={() => { setShowParticipants(!showParticipants) }}>
+                            <BsFillPeopleFill />
                         </button>
 
                     </div>

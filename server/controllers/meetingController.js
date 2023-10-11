@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const { throwError } = require("../middleware/error");
 const mongoose = require("mongoose");
 const { fork } = require("child_process");
+
 // @desc create a new meeting
 // @route POST  => /api/meeting/addMeeting
 // @access  Admin
@@ -167,6 +168,7 @@ exports.joinMeeting = asyncHandler(async (req, res, next) => {
       ) {
         res.status(200).json({
           success: true,
+          message: "User successfully joined",
           meeting,
           user_id,
         });
@@ -272,41 +274,8 @@ exports.deActivate = asyncHandler(async (req, res, next) => {
 
 exports.invitedMeeting = asyncHandler(async (req, res, next) => {
   try {
-    // const querySearch = {
-    //   $or: [
-    //     { meetingTitle: { $regex: new RegExp(query, "i") } },
-    //     { slug: { $regex: new RegExp(query, "i") } },
-    //     { "participantList.name": { $regex: new RegExp(query, "i") } },
-    //     { "hostList.name": { $regex: new RegExp(query, "i") } },
-    //   ],
-    // };
-
-    // const reqDate = new Date(req.query.date);
-    // console.log(reqDate.toLocaleDateString());
-    // const newDate = new Intl.DateTimeFormat("en-in",{
-    //   dateStyle:"full"
-    // })
-
-    // const pastMeeting = await meetingModel
-    //   .find({
-    //     $or: [
-    //       { participants: new mongoose.Types.ObjectId(req.userId) },
-    //       { meetingDate: { $lt: reqDate } },
-    //     ],
-    //   })
-    //   .populate({ path: "participants", select: ["name"] })
-    //   .populate({ path: "host", select: ["name"] });
-
-    // const upcomingMeeting = await meetingModel
-    //   .find({
-    //     $or: [
-    //       { participants: new mongoose.Types.ObjectId(req.userId) },
-    //       { meetingDate: { $gt: reqDate } },
-    //     ],
-    //   })
-    //   .populate({ path: "participants", select: ["name"] })
-    //   .populate({ path: "host", select: ["name"] });
-
+  
+ 
     const userInvitedMeeting = await meetingModel
       .find({
         $or: [{ participants: new mongoose.Types.ObjectId(req.userId) }],

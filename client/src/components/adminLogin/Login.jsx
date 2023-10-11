@@ -7,7 +7,6 @@ import Header from '../Header/Header';
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-// import axios from 'axios';
 import axios from "../../axios" 
 
 function Login() {
@@ -48,14 +47,11 @@ function Login() {
       console.log(res.data);
       if(res.status===200 && res.data.isAdmin){
 
-        // console.log("admin",res.data);
         localStorage.setItem("admin_token", res.data.access_token);
       
           navigate("/admin/meetings");
-        //   setUser(res.data)
       }
       
-      // localStorage.setItem("token", res.data.access_token)
     } catch (error) {
       console.log(error);
     }
@@ -88,8 +84,6 @@ function Login() {
 
 
           <div>
-            {/* <input type='submit'>Submit</input> */}
-          {/* <Button style={{ width: "100%" }} onClick={submitForm}>Submit</Button> */}
             <Button style={{ width: "100%" }} type='submit'>Submit</Button>
           </div>
 

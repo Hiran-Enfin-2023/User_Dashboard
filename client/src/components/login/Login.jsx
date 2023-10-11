@@ -9,7 +9,6 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useDispatch } from "react-redux"
 import * as yup from "yup"
-// import axios from 'axios';
 import axios from "../../axios"
 import { loginSuccess } from '../../redux/auth/authSlice';
 
@@ -65,7 +64,6 @@ function Login() {
 
   return (
     <div style={{ height: "100vh" }}>
-      {/* <Header /> */}
       <div style={{ backgroundColor: "#DCDCDC ", width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}  >
 
         <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "500px", backgroundColor: "white", padding: "30px", borderRadius: "10px" }}>
@@ -89,8 +87,6 @@ function Login() {
 
 
           <div>
-            {/* <input type='submit'>Submit</input> */}
-            {/* <Button style={{ width: "100%" }} onClick={submitForm}>Submit</Button> */}
             <Button style={{ width: "100%" }} type='submit'>Submit</Button>
           </div>
 

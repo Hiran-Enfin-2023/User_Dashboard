@@ -4,7 +4,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
-import Header from '../Header/Header';
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { useForm } from "react-hook-form"
 import * as yup from "yup"
@@ -56,7 +55,6 @@ function Register() {
 
   
 
-  // console.log(inputValues);
   const onSubmit = async () => {
 
     const { name, email, phoneNumber, password, confirmPassword } = inputValues;
@@ -77,7 +75,6 @@ function Register() {
   }
   return (
     <div style={{ height: "100vh" }}>
-      {/* <Header /> */}
       <div style={{ height: "100%", backgroundColor: "#DCDCDC", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} >
         <Form onSubmit={handleSubmit(onSubmit)} style={{ width: "500px", backgroundColor: "white", padding: "30px", borderRadius: "10px" }}>
           <h3 style={{ marginBottom: "20px" }}>Register</h3>
@@ -115,7 +112,6 @@ function Register() {
 
          
           <div>
-            {/* <Button style={{ width: "100%" }} onClick={submitForm}>Submit</Button> */}
             <Button style={{ width: "100%" }} type='submit'>Submit</Button>
 
           </div>
